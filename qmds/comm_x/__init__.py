@@ -30,6 +30,7 @@ def main(
     exec_cmds: Tuple[str, ...],
     args: Tuple[str, ...],
 ):
+    """Compare (`comm`) two files after running them through a pipeline of other commands."""
     if len(args) < 2:
         raise ValueError('Must provide at least two files to comm')
 

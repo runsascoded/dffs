@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='qmdx',
-    version="0.0.1",
+    version="0.0.2",
     description="Qommands: execute shell pipelines against multiple inputs, diff/compare/join results",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

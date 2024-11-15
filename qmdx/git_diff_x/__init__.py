@@ -57,6 +57,11 @@ def main(
     else:
         raise ValueError(f"Invalid refspec: {refspec}")
 
+    diff_args = [
+        *(['-w'] if ignore_whitespace else []),
+        *(['-U', str(unified)] if unified is not None else []),
+        *(['--color=always'] if color else []),
+    ]
     if cmds:
         cmds1 = [ f'git show {ref1}:{path}', *cmds ]
         if ref2:
@@ -69,12 +74,7 @@ def main(
             cmds2 = [ shlex.split(c) for c in cmds2 ]
 
         join_pipelines(
-            base_cmd=[
-                'diff',
-                *(['-w'] if ignore_whitespace else []),
-                *(['-U', str(unified)] if unified is not None else []),
-                *(['--color=always'] if color else []),
-            ],
+            base_cmd=['diff', *diff_args],
             cmds1=cmds1,
             cmds2=cmds2,
             verbose=verbose,
@@ -82,4 +82,4 @@ def main(
             shell_executable=shell_executable,
         )
     else:
-        process.run(['git', 'diff', refspec, '--', path])
+        process.run(['git', 'diff', *diff_args, refspec, '--', path])

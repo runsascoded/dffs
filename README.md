@@ -1,6 +1,7 @@
 # qmdx
-**Q**om**m**an**ds**: execute shell pipelines against multiple inputs, diff/compare/join results
+Execute shell pipelines against multiple inputs, diff/compare/join results
 
+[![qmdx on PyPI](https://img.shields.io/pypi/v/qmdx?label=qmdx)][PyPI]
 <!-- toc -->
 - [Install](#install)
 - [CLIs](#CLIs)
@@ -204,3 +205,4 @@ git-diff-x -r '8b7a761^..8b7a761' 'wc -l' README.md
 
 
 [`jq`]: https://stedolan.github.io/jq/
+[PyPI]: https://pypi.org/project/qmdx/

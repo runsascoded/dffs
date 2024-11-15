@@ -5,8 +5,8 @@ from typing import Tuple
 from click import option, command
 from utz import process
 
-from qmds.cli import args, shell_exec_opt, no_shell_opt, verbose_opt, exec_cmd_opt
-from qmds.utils import join_pipelines
+from qmdx.cli import args, shell_exec_opt, no_shell_opt, verbose_opt, exec_cmd_opt
+from qmdx.utils import join_pipelines
 
 
 @command('comm-x', short_help='comm two files after running them through a pipeline of other commands', no_args_is_help=True)

@@ -7,9 +7,9 @@ import click
 from click import option, argument, command
 from utz import process
 
-from qmds.cli import shell_exec_opt, no_shell_opt, verbose_opt, exec_cmd_opt
-from qmds.diff_x import color_opt, unified_opt, ignore_whitespace_opt
-from qmds.utils import join_pipelines
+from qmdx.cli import shell_exec_opt, no_shell_opt, verbose_opt, exec_cmd_opt
+from qmdx.diff_x import color_opt, unified_opt, ignore_whitespace_opt
+from qmdx.utils import join_pipelines
 
 
 @command('git-diff-x', short_help='Diff a Git-tracked file at two commits (or one commit vs. current worktree), optionally passing both through another command first')

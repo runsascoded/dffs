@@ -1,4 +1,4 @@
-# qmds
+# qmdx
 **Q**om**m**an**ds**: execute shell pipelines against multiple inputs, diff/compare/join results
 
 <!-- toc -->
@@ -18,7 +18,7 @@
 ## Install <a id="install"></a>
 
 ```bash
-pip install qmds
+pip install qmdx
 ```
 
 ## CLIs <a id="CLIs"></a>

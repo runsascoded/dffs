@@ -192,14 +192,14 @@ git-diff-x --help
 ```
 
 #### Examples <a id="git-diff-x-examples"></a>
-Compare line-count (`wc -l`) of this README, before and after commit `f16b2f0`:
-<!-- `bmdf -- git-diff-x -r f16b2f0^..f16b2f0 'wc -l' README.md` -->
+Compare line-count (`wc -l`) of this README, before and after commit `8b7a761`:
+<!-- `bmdf -- git-diff-x -r 8b7a761^..8b7a761 'wc -l' README.md` -->
 ```bash
-git-diff-x -r 'f16b2f0^..f16b2f0' 'wc -l' README.md
+git-diff-x -r '8b7a761^..8b7a761' 'wc -l' README.md
 # 1c1
 # < 16
 # ---
-# > 170
+# > 206
 ```
 
 

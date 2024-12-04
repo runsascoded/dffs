@@ -3,9 +3,8 @@ from __future__ import annotations
 import shlex
 from typing import Tuple
 
-import click
 from click import option, argument, command
-from utz import process
+from utz import process, err
 
 from qmdx.cli import shell_exec_opt, no_shell_opt, verbose_opt, exec_cmd_opt
 from qmdx.diff_x import color_opt, unified_opt, ignore_whitespace_opt
@@ -21,7 +20,7 @@ from qmdx.utils import join_pipelines
 @verbose_opt
 @ignore_whitespace_opt
 @exec_cmd_opt
-@argument('args', metavar='[exec_cmd...] <path>', nargs=-1)
+@argument('args', metavar='[exec_cmd...] [<path> | - [paths...]]', nargs=-1)
 def main(
     color: bool,
     refspec: str | None,
@@ -33,20 +32,33 @@ def main(
     exec_cmds: Tuple[str, ...],
     args: Tuple[str, ...],
 ):
-    """Diff a file at two commits (or one commit vs. current worktree), optionally passing both through `cmd` first
+    """Diff files at two commits, or one commit and the current worktree, after applying an optional command pipeline.
 
     Examples:
 
-    dvc-utils diff -r HEAD^..HEAD wc -l foo.dvc  # Compare the number of lines (`wc -l`) in `foo` (the file referenced by `foo.dvc`) at the previous vs. current commit (`HEAD^..HEAD`).
+    # Compare the number of lines (`wc -l`) in file `foo` at the previous vs. current commit (`-r HEAD^..HEAD`):
 
-    dvc-utils diff md5sum foo  # Diff the `md5sum` of `foo` (".dvc" extension is optional) at HEAD (last committed value) vs. the current worktree content.
+    git diff-x -r HEAD^..HEAD wc -l foo
+
+    # Colorized (`-c`) diff of `md5sum`s of `foo`, at HEAD (last committed value) vs. the current worktree content:
+
+    git diff-x -c md5sum foo
+
+    # Use `-` to separate pipeline commands from paths (when more than one path is to be diffed), e.g. this compares
+    the largest 10 numbers in `file{1,2}` (HEAD vs. worktree):
+
+    git diff-x 'sort -rn' head - file1 file2
     """
-    if not args:
-        raise click.UsageError('Must specify [cmd...] <path>')
+    if '-' in args:
+        idx = args.index('-')
+        cmd_args = args[:idx]
+        paths = args[idx+1:]
+    else:
+        *cmd_args, path = args
+        paths = [path]
 
+    cmds = list(exec_cmds) + list(cmd_args)
     shell = not no_shell
-    *cmds, path = args
-    cmds = list(exec_cmds) + cmds
 
     git_relpath_prefix = process.line('git', 'rev-parse', '--show-prefix', log=False)
     pcs = refspec.split('..', 1)
@@ -63,24 +75,27 @@ def main(
         *(['-U', str(unified)] if unified is not None else []),
         *(['--color=always'] if color else []),
     ]
-    if cmds:
-        cmds1 = [ f'git show {ref1}:{git_relpath_prefix}{path}', *cmds ]
-        if ref2:
-            cmds2 = [ f'git show {ref2}:{git_relpath_prefix}{path}', *cmds ]
-        else:
-            cmd, *sub_cmds = cmds
-            cmds2 = [ f'{cmd} {path}', *sub_cmds ]
-        if not shell:
-            cmds1 = [ shlex.split(c) for c in cmds1 ]
-            cmds2 = [ shlex.split(c) for c in cmds2 ]
+    for path in paths:
+        if len(paths) > 1:
+            err(path)
+        if cmds:
+            cmds1 = [ f'git show {ref1}:{git_relpath_prefix}{path}', *cmds ]
+            if ref2:
+                cmds2 = [ f'git show {ref2}:{git_relpath_prefix}{path}', *cmds ]
+            else:
+                cmd, *sub_cmds = cmds
+                cmds2 = [ f'{cmd} {path}', *sub_cmds ]
+            if not shell:
+                cmds1 = [ shlex.split(c) for c in cmds1 ]
+                cmds2 = [ shlex.split(c) for c in cmds2 ]
 
-        join_pipelines(
-            base_cmd=['diff', *diff_args],
-            cmds1=cmds1,
-            cmds2=cmds2,
-            verbose=verbose,
-            shell=not no_shell,
-            shell_executable=shell_executable,
-        )
-    else:
-        process.run(['git', 'diff', *diff_args, refspec, '--', path])
+            join_pipelines(
+                base_cmd=['diff', *diff_args],
+                cmds1=cmds1,
+                cmds2=cmds2,
+                verbose=verbose,
+                shell=not no_shell,
+                shell_executable=shell_executable,
+            )
+        else:
+            process.run(['git', 'diff', *diff_args, refspec, '--', path])

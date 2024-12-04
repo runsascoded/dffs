@@ -159,19 +159,28 @@ comm-x sort 1.txt 2.txt
 <!-- `bmdf -- git-diff-x --help` -->
 ```bash
 git-diff-x --help
-# Usage: git-diff-x [OPTIONS] [exec_cmd...] <path>
+# Usage: git-diff-x [OPTIONS] [exec_cmd...] [<path> | - [paths...]]
 #
-#   Diff a file at two commits (or one commit vs. current worktree), optionally
-#   passing both through `cmd` first
+#   Diff files at two commits, or one commit and the current worktree, after
+#   applying an optional command pipeline.
 #
 #   Examples:
 #
-#   dvc-utils diff -r HEAD^..HEAD wc -l foo.dvc  # Compare the number of lines
-#   (`wc -l`) in `foo` (the file referenced by `foo.dvc`) at the previous vs.
-#   current commit (`HEAD^..HEAD`).
+#   # Compare the number of lines (`wc -l`) in file `foo` at the previous vs.
+#   current commit (`-r HEAD^..HEAD`):
 #
-#   dvc-utils diff md5sum foo  # Diff the `md5sum` of `foo` (".dvc" extension is
-#   optional) at HEAD (last committed value) vs. the current worktree content.
+#   git diff-x -r HEAD^..HEAD wc -l foo
+#
+#   # Colorized (`-c`) diff of `md5sum`s of `foo`, at HEAD (last committed
+#   value) vs. the current worktree content:
+#
+#   git diff-x -c md5sum foo
+#
+#   # Use `-` to separate pipeline commands from paths (when more than one path
+#   is to be diffed), e.g. this compares the largest 10 numbers in `file{1,2}`
+#   (HEAD vs. worktree):
+#
+#   git diff-x 'sort -rn' head - file1 file2
 #
 # Options:
 #   -c, --color                  Colorize the output
@@ -201,6 +210,21 @@ git-diff-x -r '8b7a761^..8b7a761' 'wc -l' README.md
 # < 16
 # ---
 # > 206
+```
+
+Examples from `--help` above:
+```bash
+# Compare the number of lines (`wc -l`) in file `foo` at the previous vs. current commit
+# (`-r HEAD^..HEAD`).
+git diff-x -r HEAD^..HEAD wc -l foo
+
+# Colorized (`-c`) diff of `md5sum`s of `foo`, at HEAD (last committed value) vs. the current
+# worktree content.
+git diff-x -c md5sum foo
+
+# Use `-` to separate pipeline commands from paths (when more than one path is to be diffed),
+# e.g. this compares the largest 10 numbers in `file{1,2}` (HEAD vs. worktree):
+git diff-x 'sort -rn' head - file1 file2
 ```
 
 

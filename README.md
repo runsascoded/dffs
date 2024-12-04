@@ -227,6 +227,30 @@ git diff-x -c md5sum foo
 git diff-x 'sort -rn' head - file1 file2
 ```
 
+I use `git-diff-x` via several Git and Bash aliases:
+
+[`.gitconfig`][diff-x git configs]:
+```.gitconfig
+[alias]
+  ; pip install qmdx
+  dx = diff-x
+  dxc = diff-x -c
+  dxcr = diff-x -c -r
+  dxr = diff-x -r
+  dxw = diff-x -w
+```
+
+[`.git-rc`][diff-x aliases]:
+```bash
+alias gdx="g dx"
+alias gdxc="g dxc"
+alias gdxcr="g dxcr"
+alias gdxr="g dxr"
+alias gdxw="g dxw"
+```
 
 [`jq`]: https://stedolan.github.io/jq/
 [PyPI]: https://pypi.org/project/qmdx/
+
+[diff-x git configs]: https://github.com/ryan-williams/git-helpers/blob/97b3f31ade349d31842967054c2dec96d47d4a42/diff/.gitconfig#L58-L63
+[diff-x aliases]: https://github.com/ryan-williams/git-helpers/blob/97b3f31ade349d31842967054c2dec96d47d4a42/diff/.git-rc#L53-L57

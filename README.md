@@ -1,5 +1,5 @@
 # qmdx
-Execute shell pipelines against multiple inputs, diff/compare/join results
+Pipe and diff files: execute shell pipelines against multiple inputs, diff/compare/join results.
 
 [![qmdx on PyPI](https://img.shields.io/pypi/v/qmdx?label=qmdx)][PyPI]
 <!-- toc -->

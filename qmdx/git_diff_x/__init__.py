@@ -48,6 +48,7 @@ def main(
     *cmds, path = args
     cmds = list(exec_cmds) + cmds
 
+    git_relpath_prefix = process.line('git', 'rev-parse', '--show-prefix', log=False)
     pcs = refspec.split('..', 1)
     if len(pcs) == 1:
         ref1 = pcs[0]
@@ -63,9 +64,9 @@ def main(
         *(['--color=always'] if color else []),
     ]
     if cmds:
-        cmds1 = [ f'git show {ref1}:{path}', *cmds ]
+        cmds1 = [ f'git show {ref1}:{git_relpath_prefix}{path}', *cmds ]
         if ref2:
-            cmds2 = [ f'git show {ref2}:{path}', *cmds ]
+            cmds2 = [ f'git show {ref2}:{git_relpath_prefix}{path}', *cmds ]
         else:
             cmd, *sub_cmds = cmds
             cmds2 = [ f'{cmd} {path}', *sub_cmds ]

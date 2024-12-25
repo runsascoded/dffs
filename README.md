@@ -37,7 +37,7 @@ diff-x
 # Options:
 #   -c, --color                  Colorize the output
 #   -s, --shell-executable TEXT  Shell to use for executing commands; defaults
-#                                to $SHELL (/bin/bash)
+#                                to $SHELL
 #   -S, --no-shell               Don't pass `shell=True` to Python
 #                                `subprocess`es
 #   -U, --unified INTEGER        Number of lines of context to show (passes
@@ -95,7 +95,7 @@ comm-x
 #   -3, --exclude-3              Exclude lines found in both pipelines
 #   -i, --case-insensitive       Case insensitive comparison
 #   -s, --shell-executable TEXT  Shell to use for executing commands; defaults
-#                                to $SHELL (/bin/bash)
+#                                to $SHELL
 #   -S, --no-shell               Don't pass `shell=True` to Python
 #                                `subprocess`es
 #   -v, --verbose                Log intermediate commands to stderr
@@ -186,8 +186,10 @@ git-diff-x --help
 #   -c, --color                  Colorize the output
 #   -r, --refspec TEXT           <commit 1>..<commit 2> (compare two commits) or
 #                                <commit> (compare <commit> to the worktree)
+#   -R, --ref TEXT               Diff a specific commit; alias for `-r
+#                                <ref>^..<ref>`
 #   -s, --shell-executable TEXT  Shell to use for executing commands; defaults
-#                                to $SHELL (/bin/bash)
+#                                to $SHELL
 #   -S, --no-shell               Don't pass `shell=True` to Python
 #                                `subprocess`es
 #   -U, --unified INTEGER        Number of lines of context to show (passes
@@ -203,9 +205,9 @@ git-diff-x --help
 
 #### Examples <a id="git-diff-x-examples"></a>
 Compare line-count (`wc -l`) of this README, before and after commit `8b7a761`:
-<!-- `bmdf -- git-diff-x -r 8b7a761^..8b7a761 'wc -l' README.md` -->
+<!-- `bmdf -- git-diff-x -R 8b7a761 'wc -l' README.md` -->
 ```bash
-git-diff-x -r '8b7a761^..8b7a761' 'wc -l' README.md
+git-diff-x -R 8b7a761 'wc -l' README.md
 # 1c1
 # < 16
 # ---
@@ -215,8 +217,8 @@ git-diff-x -r '8b7a761^..8b7a761' 'wc -l' README.md
 Examples from `--help` above:
 ```bash
 # Compare the number of lines (`wc -l`) in file `foo` at the previous vs. current commit
-# (`-r HEAD^..HEAD`).
-git diff-x -r HEAD^..HEAD wc -l foo
+# (`-R HEAD` is equivalent to `-r HEAD^..HEAD`).
+git diff-x -R HEAD wc -l foo
 
 # Colorized (`-c`) diff of `md5sum`s of `foo`, at HEAD (last committed value) vs. the current
 # worktree content.

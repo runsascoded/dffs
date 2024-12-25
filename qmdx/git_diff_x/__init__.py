@@ -13,7 +13,8 @@ from qmdx.utils import join_pipelines
 
 @command('git-diff-x', short_help='Diff a Git-tracked file at two commits (or one commit vs. current worktree), optionally passing both through another command first')
 @color_opt
-@option('-r', '--refspec', default='HEAD', help='<commit 1>..<commit 2> (compare two commits) or <commit> (compare <commit> to the worktree)')
+@option('-r', '--refspec', help='<commit 1>..<commit 2> (compare two commits) or <commit> (compare <commit> to the worktree)')
+@option('-R', '--ref', help="Diff a specific commit; alias for `-r <ref>^..<ref>`")
 @shell_exec_opt
 @no_shell_opt
 @unified_opt
@@ -24,6 +25,7 @@ from qmdx.utils import join_pipelines
 def main(
     color: bool,
     refspec: str | None,
+    ref: str | None,
     shell_executable: str | None,
     no_shell: bool,
     unified: int | None,
@@ -59,8 +61,15 @@ def main(
 
     cmds = list(exec_cmds) + list(cmd_args)
     shell = not no_shell
-
     git_relpath_prefix = process.line('git', 'rev-parse', '--show-prefix', log=False)
+
+    if refspec and ref:
+        raise ValueError("Specify -r/--refspec xor -R/--ref")
+    if ref:
+        refspec = f'{ref}^..{ref}'
+    elif not refspec:
+        refspec = 'HEAD'
+
     pcs = refspec.split('..', 1)
     if len(pcs) == 1:
         ref1 = pcs[0]

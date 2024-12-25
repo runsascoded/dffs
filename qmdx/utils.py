@@ -5,9 +5,7 @@ from os import environ as env, getcwd
 from os.path import relpath
 from subprocess import Popen
 
-from utz.process import err
-from utz.process.named_pipes import named_pipes
-from utz.process.pipeline import pipeline
+from utz import err, named_pipes, pipeline, process
 
 
 @cache
@@ -32,7 +30,7 @@ def join_pipelines(
 
     Args:
         base_cmd: Top=level command that takes two positional args (named pipes with the outputs
-            of the ``cmds1`` and ``cmds2`` pipelines.
+            of the ``cmds1`` and ``cmds2`` pipelines).
         cmds1: First sequence of commands to pipe together
         cmds2: Second sequence of commands to pipe together
         verbose: Whether to print commands being executed

@@ -13,10 +13,21 @@ jobs:
         python-version: ['3.11']
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install -e .
+      - run: pip install -e . bmdf
+      - name: Set up README example tests
+        run: |
+          seq 10 > 1.txt
+          seq 10 -2 0 > 2.txt
+      - name: Verify README examples, TOC
+        run: |
+          mdcmd
+          mktoc
+          git diff --exit-code
       - name: Release
         if: startsWith(github.ref, 'refs/tags/') && matrix.python-version == '3.11'
         env:

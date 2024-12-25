@@ -237,9 +237,13 @@ I use `git-diff-x` via several Git and Bash aliases:
   ; pip install qmdx
   dx = diff-x
   dxc = diff-x -c
-  dxcr = diff-x -c -r
-  dxr = diff-x -r
+  dxcr = diff-x -cR
+  dxcrr = diff-x -cr
+  dxr = diff-x -R
+  dxrr = diff-x -r
   dxw = diff-x -w
+  dxwr = diff-x -wR
+  dxwrr = diff-x -wr
 ```
 
 [`.git-rc`][diff-x aliases]:
@@ -247,12 +251,16 @@ I use `git-diff-x` via several Git and Bash aliases:
 alias gdx="g dx"
 alias gdxc="g dxc"
 alias gdxcr="g dxcr"
+alias gdxcrr="g dxcrr"
 alias gdxr="g dxr"
+alias gdxrr="g dxrr"
 alias gdxw="g dxw"
+alias gdxwr="g dxwr"
+alias gdxwrr="g dxwrr"
 ```
 
 [`jq`]: https://stedolan.github.io/jq/
 [PyPI]: https://pypi.org/project/qmdx/
 
-[diff-x git configs]: https://github.com/ryan-williams/git-helpers/blob/97b3f31ade349d31842967054c2dec96d47d4a42/diff/.gitconfig#L58-L63
-[diff-x aliases]: https://github.com/ryan-williams/git-helpers/blob/97b3f31ade349d31842967054c2dec96d47d4a42/diff/.git-rc#L53-L57
+[diff-x git configs]: https://github.com/ryan-williams/git-helpers/blob/5f27c2e4e88e3e14ede21483c998bdbe2cfccc6f/diff/.gitconfig#L64-L73
+[diff-x aliases]: https://github.com/ryan-williams/git-helpers/blob/5f27c2e4e88e3e14ede21483c998bdbe2cfccc6f/diff/.git-rc#L59-L67

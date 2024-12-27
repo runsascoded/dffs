@@ -18,7 +18,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install -e . bmdf
+          cache: pip
+          cache-dependency-path: 'requirements*.txt'
+      - run: pip install -e . -r requirements-ci.txt
       - name: Set up README example tests
         run: |
           seq 10 > 1.txt

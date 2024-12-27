@@ -104,7 +104,7 @@ def main(
                 cmds2=cmds2,
                 verbose=verbose,
                 shell=not no_shell,
-                shell_executable=shell_executable,
+                executable=shell_executable,
             )
         else:
             process.run(['git', 'diff', *diff_args, refspec, '--', path])

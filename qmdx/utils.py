@@ -23,7 +23,7 @@ def join_pipelines(
     cmds1: list[str],
     cmds2: list[str],
     verbose: bool = False,
-    shell_executable: str | None = None,
+    executable: str | None = None,
     **kwargs,
 ):
     """Run two sequences of piped commands, pass their outputs as inputs to a ``base_cmd``.
@@ -34,7 +34,7 @@ def join_pipelines(
         cmds1: First sequence of commands to pipe together
         cmds2: Second sequence of commands to pipe together
         verbose: Whether to print commands being executed
-        shell_executable: Shell to use for executing commands; defaults to $SHELL
+        executable: Shell to use for executing commands; defaults to $SHELL
         **kwargs: Additional arguments passed to subprocess.Popen
 
     Each command sequence will be piped together before being compared.
@@ -42,8 +42,8 @@ def join_pipelines(
     execute 'cat foo.txt | sort' before comparing with cmds2's output.
 
     Adapted from https://stackoverflow.com/a/28840955"""
-    if shell_executable is None:
-        shell_executable = env.get('SHELL')
+    if executable is None:
+        executable = env.get('SHELL')
 
     with named_pipes(n=2) as pipes:
         (pipe1, pipe2) = pipes
@@ -63,7 +63,7 @@ def join_pipelines(
                 cmds,
                 pipe,
                 wait=False,
-                shell_executable=shell_executable,
+                executable=executable,
                 **kwargs,
             )
 

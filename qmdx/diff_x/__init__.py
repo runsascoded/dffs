@@ -51,7 +51,7 @@ def main(
             cmds2=[ f'{first} {path2}', *rest ],
             verbose=verbose,
             shell=not no_shell,
-            shell_executable=shell_executable,
+            executable=shell_executable,
         )
     else:
         subprocess.run(['diff', *diff_args, path1, path2])

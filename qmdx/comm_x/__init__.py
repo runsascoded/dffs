@@ -50,7 +50,7 @@ def main(
             cmds2=[ f'{first} {path2}', *rest ],
             verbose=verbose,
             shell=not no_shell,
-            shell_executable=shell_executable,
+            executable=shell_executable,
         )
     else:
         process.run(['comm', path1, path2])

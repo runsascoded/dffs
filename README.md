@@ -79,6 +79,7 @@ echo '{"a":1,"b":3}' | jq > 2.json
 ```
 
 ### `comm-x` <a id="comm-x"></a>
+`comm` essentially performs set intersection/difference; `comm-x` allows you to run a pipeline of commands on each input, before comparing them.
 
 #### Usage <a id="comm-x-usage"></a>
 <!-- `bmdf comm-x` -->
@@ -86,8 +87,8 @@ echo '{"a":1,"b":3}' | jq > 2.json
 comm-x
 # Usage: comm-x [OPTIONS] [exec_cmd...] <path1> <path2>
 #
-#   Compare (`comm`) two files after running them through a pipeline of other
-#   commands.
+#   Select or reject lines common to two input streams, after running each
+#   through a pipeline of other commands.
 #
 # Options:
 #   -1, --exclude-1              Exclude lines only found in the first pipeline

@@ -1,5 +1,5 @@
 # dffs
-Pipe and diff files: execute shell pipelines against multiple inputs, diff/compare/join results.
+Pipe and diff files: execute shell pipelines, diff/compare/join results.
 
 [![dffs on PyPI](https://img.shields.io/pypi/v/dffs?label=dffs)][PyPI]
 <!-- toc -->

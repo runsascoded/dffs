@@ -1,7 +1,7 @@
-# qmdx
+# dffs
 Pipe and diff files: execute shell pipelines against multiple inputs, diff/compare/join results.
 
-[![qmdx on PyPI](https://img.shields.io/pypi/v/qmdx?label=qmdx)][PyPI]
+[![dffs on PyPI](https://img.shields.io/pypi/v/dffs?label=dffs)][PyPI]
 <!-- toc -->
 - [Install](#install)
 - [CLIs](#CLIs)
@@ -19,7 +19,7 @@ Pipe and diff files: execute shell pipelines against multiple inputs, diff/compa
 ## Install <a id="install"></a>
 
 ```bash
-pip install qmdx
+pip install dffs
 ```
 
 ## CLIs <a id="CLIs"></a>
@@ -235,7 +235,7 @@ I use `git-diff-x` via several Git and Bash aliases:
 [`.gitconfig`][diff-x git configs]:
 ```.gitconfig
 [alias]
-  ; pip install qmdx
+  ; pip install dffs
   dx = diff-x
   dxc = diff-x -c
   dxcr = diff-x -cR
@@ -261,7 +261,7 @@ alias gdxwrr="g dxwrr"
 ```
 
 [`jq`]: https://stedolan.github.io/jq/
-[PyPI]: https://pypi.org/project/qmdx/
+[PyPI]: https://pypi.org/project/dffs/
 
 [diff-x git configs]: https://github.com/ryan-williams/git-helpers/blob/5f27c2e4e88e3e14ede21483c998bdbe2cfccc6f/diff/.gitconfig#L64-L73
 [diff-x aliases]: https://github.com/ryan-williams/git-helpers/blob/5f27c2e4e88e3e14ede21483c998bdbe2cfccc6f/diff/.git-rc#L59-L67

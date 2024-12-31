@@ -5,8 +5,8 @@ from typing import Tuple
 
 from click import option, command
 
-from qmdx.cli import args, shell_exec_opt, no_shell_opt, verbose_opt, exec_cmd_opt
-from qmdx.utils import join_pipelines
+from dffs.cli import args, shell_exec_opt, no_shell_opt, verbose_opt, exec_cmd_opt
+from dffs.utils import join_pipelines
 
 color_opt = option('-c', '--color', is_flag=True, help='Colorize the output')
 unified_opt = option('-U', '--unified', type=int, help='Number of lines of context to show (passes through to `diff`)')

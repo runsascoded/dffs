@@ -1,5 +1,3 @@
-from os import environ as env
-
 from click import option, argument
 
 shell_exec_opt = option('-s', '--shell-executable', help=f'Shell to use for executing commands; defaults to $SHELL')

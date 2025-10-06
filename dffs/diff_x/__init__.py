@@ -45,7 +45,7 @@ def main(
     ]
     if cmds:
         first, *rest = cmds
-        join_pipelines(
+        returncode = join_pipelines(
             base_cmd=['diff', *diff_args],
             cmds1=[ f'{first} {path1}', *rest ],
             cmds2=[ f'{first} {path2}', *rest ],
@@ -53,5 +53,7 @@ def main(
             shell=not no_shell,
             executable=shell_executable,
         )
+        raise SystemExit(returncode)
     else:
-        subprocess.run(['diff', *diff_args, path1, path2])
+        result = subprocess.run(['diff', *diff_args, path1, path2])
+        raise SystemExit(result.returncode)

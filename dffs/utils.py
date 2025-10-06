@@ -73,11 +73,13 @@ def join_pipelines(
         for p in processes:
             p.wait()
 
-        # Check exit codes and return first non-zero
-        for p in processes:
+        # Check pipeline processes first (all except base_cmd which is processes[0])
+        # Pipeline commands should succeed (returncode 0)
+        for p in processes[1:]:
             if p.returncode != 0:
                 return p.returncode
 
-        return 0
+        # Return base_cmd exit code (may be 0, 1 for diff, or error code)
+        return processes[0].returncode
 
 

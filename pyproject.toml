@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dffs"
-version = "0.0.5"
+version = "0.0.6"
 description = "Pipe and diff files: execute shell pipelines against multiple inputs, diff/compare/join results."
 readme = "README.md"
 license = {text = "MIT"}

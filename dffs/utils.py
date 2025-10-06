@@ -25,7 +25,7 @@ def join_pipelines(
     verbose: bool = False,
     executable: str | None = None,
     **kwargs,
-):
+) -> int:
     """Run two sequences of piped commands, pass their outputs as inputs to a ``base_cmd``.
 
     Args:
@@ -36,6 +36,9 @@ def join_pipelines(
         verbose: Whether to print commands being executed
         executable: Shell to use for executing commands; defaults to $SHELL
         **kwargs: Additional arguments passed to subprocess.Popen
+
+    Returns:
+        Exit code: 0 if all processes succeeded, otherwise the first non-zero exit code
 
     Each command sequence will be piped together before being compared.
     For example, if cmds1 = ['cat foo.txt', 'sort'], the function will
@@ -69,5 +72,14 @@ def join_pipelines(
 
         for p in processes:
             p.wait()
+
+        # Check pipeline processes first (all except base_cmd which is processes[0])
+        # Pipeline commands should succeed (returncode 0)
+        for p in processes[1:]:
+            if p.returncode != 0:
+                return p.returncode
+
+        # Return base_cmd exit code (may be 0, 1 for diff, or error code)
+        return processes[0].returncode
 
 

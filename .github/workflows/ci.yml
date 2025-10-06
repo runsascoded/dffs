@@ -26,6 +26,8 @@ jobs:
         run: |
           seq 10 > 1.txt
           seq 10 -2 0 > 2.txt
+      - name: Test join_pipelines
+        run: python test_utils.py
       - name: Verify README examples, TOC
         run: |
           mdcmd

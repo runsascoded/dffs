@@ -1,37 +1,14 @@
 version = 1
 revision = 3
-requires-python = ">=3.9"
-resolution-markers = [
-    "python_full_version >= '3.10'",
-    "python_full_version < '3.10'",
-]
-
-[[package]]
-name = "bmdf"
-version = "0.6.0"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version < '3.10'",
-]
-dependencies = [
-    { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "utz", marker = "python_full_version < '3.10'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/f2/1d/fbc9089875ce539ebc3c2d062272331a5d0cb9b51425f74ee7aa942c3f57/bmdf-0.6.0.tar.gz", hash = "sha256:c83c3b7283e6b8844091ce44bbd5841cd7c1c8fee62972bed377d90df944b88b", size = 16458, upload-time = "2025-05-31T16:57:17.907Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/83/9f/8ca883287b30c91926b75c9c344788c26de741919f2e4b61d8e979c3e42b/bmdf-0.6.0-py3-none-any.whl", hash = "sha256:4cbfd2f81c0bc5c36586f2a15a1dde194c40f14540a7ae92ed2a5b5ca14ef68e", size = 14390, upload-time = "2025-05-31T16:57:16.537Z" },
-]
+requires-python = ">=3.10"
 
 [[package]]
 name = "bmdf"
 version = "0.6.2"
 source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.10'",
-]
 dependencies = [
-    { name = "click", version = "8.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "utz", marker = "python_full_version >= '3.10'" },
+    { name = "click" },
+    { name = "utz" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/96/26/e328e0770c2e2c2f9ffb6b4747a10b4b0f181356a9bb854c056fce9c77d0/bmdf-0.6.2.tar.gz", hash = "sha256:33543af835852ed2ddea3c0ee13311b1db20e0365f19653e4b8b291ff3f5e404", size = 18545, upload-time = "2025-09-10T01:15:37.458Z" }
 wheels = [
@@ -40,28 +17,10 @@ wheels = [
 
 [[package]]
 name = "click"
-version = "8.1.8"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version < '3.10'",
-]
-dependencies = [
-    { name = "colorama", marker = "python_full_version < '3.10' and sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593, upload-time = "2024-12-21T18:38:44.339Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/7e/d4/7ebdbd03970677812aac39c869717059dbb71a4cfc033ca6e5221787892c/click-8.1.8-py3-none-any.whl", hash = "sha256:63c132bbbed01578a06712a2d1f497bb62d9c1c0d329b7903a866228027263b2", size = 98188, upload-time = "2024-12-21T18:38:41.666Z" },
-]
-
-[[package]]
-name = "click"
 version = "8.3.0"
 source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.10'",
-]
 dependencies = [
-    { name = "colorama", marker = "python_full_version >= '3.10' and sys_platform == 'win32'" },
+    { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/46/61/de6cd827efad202d7057d93e0fed9294b96952e188f7384832791c7b2254/click-8.3.0.tar.gz", hash = "sha256:e7b8232224eba16f4ebe410c25ced9f7875cb5f3263ffc93cc3e8da705e229c4", size = 276943, upload-time = "2025-09-18T17:32:23.696Z" }
 wheels = [
@@ -82,15 +41,13 @@ name = "dffs"
 version = "0.0.6"
 source = { editable = "." }
 dependencies = [
-    { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "click", version = "8.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "click" },
     { name = "utz" },
 ]
 
 [package.optional-dependencies]
 ci = [
-    { name = "bmdf", version = "0.6.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "bmdf", version = "0.6.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "bmdf" },
     { name = "pytest" },
 ]
 test = [

@@ -41,7 +41,9 @@ jobs:
           UV_PUBLISH_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
           uv build
-          uv publish
+          uv publish --verbose --color always
+          VERSION=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+          echo "📦 Published to PyPI: https://pypi.org/project/dffs/$VERSION/"
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/') && matrix.python-version == '3.11'
         env:

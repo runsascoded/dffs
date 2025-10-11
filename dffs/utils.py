@@ -24,6 +24,7 @@ def join_pipelines(
     cmds2: list[str],
     verbose: bool = False,
     executable: str | None = None,
+    both: bool = False,
     **kwargs,
 ) -> int:
     """Run two sequences of piped commands, pass their outputs as inputs to a ``base_cmd``.
@@ -35,6 +36,7 @@ def join_pipelines(
         cmds2: Second sequence of commands to pipe together
         verbose: Whether to print commands being executed
         executable: Shell to use for executing commands; defaults to $SHELL
+        both: Merge stderr into stdout in pipeline commands (like shell `2>&1`)
         **kwargs: Additional arguments passed to subprocess.Popen
 
     Returns:
@@ -67,6 +69,7 @@ def join_pipelines(
                 pipe,
                 wait=False,
                 executable=executable,
+                both=both,
                 **kwargs,
             )
 
@@ -77,6 +80,13 @@ def join_pipelines(
         # Pipeline commands should succeed (returncode 0)
         for p in processes[1:]:
             if p.returncode != 0:
+                # Print stderr from failed process if available
+                if p.stderr:
+                    stderr_output = p.stderr.read()
+                    if stderr_output:
+                        if isinstance(stderr_output, bytes):
+                            stderr_output = stderr_output.decode('utf-8', errors='replace')
+                        err(stderr_output.rstrip())
                 return p.returncode
 
         # Return base_cmd exit code (may be 0, 1 for diff, or error code)

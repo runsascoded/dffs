@@ -94,6 +94,59 @@ class TestJoinPipelinesErrors:
         )
         assert returncode != 0
 
+    def test_stderr_from_failed_command(self):
+        """Test that stderr from failed pipeline commands is properly handled."""
+        # This test verifies that failed commands with stderr output
+        # return the correct exit code. The stderr output is printed
+        # directly to the terminal (bypassing pytest's capture).
+        returncode = join_pipelines(
+            base_cmd=['diff'],
+            cmds1=['python -c "import sys; sys.stderr.write(\'Custom error message\\n\'); sys.exit(2)"'],
+            cmds2=['echo bar'],
+            shell=True,
+        )
+        assert returncode == 2
+
+
+class TestJoinPipelinesStderr:
+    """Test cases for stderr handling."""
+
+    def test_both_true_merges_stderr_into_diff(self):
+        """Test that both=True merges stderr into stdout for diffing."""
+        returncode = join_pipelines(
+            base_cmd=['diff'],
+            cmds1=['sh -c "echo stdout1; echo stderr1 >&2"'],
+            cmds2=['sh -c "echo stdout2; echo stderr2 >&2"'],
+            shell=True,
+            both=True,
+        )
+        # Should find differences (stderr is merged and differs)
+        assert returncode == 1
+
+    def test_both_false_separates_stderr(self):
+        """Test that both=False (default) keeps stderr separate from stdout."""
+        returncode = join_pipelines(
+            base_cmd=['diff'],
+            cmds1=['sh -c "echo same"'],
+            cmds2=['sh -c "echo same; echo different >&2"'],
+            shell=True,
+            both=False,
+        )
+        # Should be identical (stderr not included in diff)
+        assert returncode == 0
+
+    def test_both_false_shows_stderr_on_error(self):
+        """Test that stderr from failed commands is shown when both=False."""
+        # Note: actual stderr output goes to terminal, not captured here
+        returncode = join_pipelines(
+            base_cmd=['diff'],
+            cmds1=['sh -c "echo error message >&2; exit 2"'],
+            cmds2=['echo bar'],
+            shell=True,
+            both=False,
+        )
+        assert returncode == 2
+
 
 class TestJoinPipelinesShellModes:
     """Test cases for different shell modes."""

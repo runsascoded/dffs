@@ -62,18 +62,21 @@ def shell_integration(shell: str | None, cli: str | None = None) -> None:
                     exit(1)
 
                 # Output header comments and section
+                in_header = True
                 for line in lines:
                     if line.startswith('# dffs shell integration') or \
                        line.startswith('# Install dffs') or \
-                       line.startswith('# Add to your'):
-                        output_lines.append(line)
-                    elif line.strip() == '':
+                       line.startswith('# Add to your') or \
+                       line.startswith('#   eval'):
                         output_lines.append(line)
                     elif line.startswith('# Core '):
+                        in_header = False
                         in_section = (line == section_header)
                         if in_section:
                             output_lines.append(line)
                     elif in_section and line.startswith('alias '):
+                        output_lines.append(line)
+                    elif line.strip() == '' and (in_header or in_section):
                         output_lines.append(line)
 
                 # Remove trailing blank lines

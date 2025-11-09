@@ -36,7 +36,7 @@ def main(
     cmds = list(exec_cmds) + cmds
     if cmds:
         first, *rest = cmds
-        join_pipelines(
+        returncode = join_pipelines(
             base_cmd=[
                 'comm',
                 *(['-1'] if exclude_1 else []),
@@ -50,5 +50,6 @@ def main(
             shell=not no_shell,
             executable=shell_executable,
         )
+        raise SystemExit(returncode)
     else:
         process.run(['comm', path1, path2])

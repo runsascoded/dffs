@@ -108,7 +108,7 @@ def main(
                 cmds1 = [ shlex.split(c) for c in cmds1 ]
                 cmds2 = [ shlex.split(c) for c in cmds2 ]
 
-            join_pipelines(
+            returncode = join_pipelines(
                 base_cmd=['diff', *diff_args],
                 cmds1=cmds1,
                 cmds2=cmds2,
@@ -116,6 +116,7 @@ def main(
                 shell=not no_shell,
                 executable=shell_executable,
             )
+            raise SystemExit(returncode)
         else:
             git_diff_args = ['git', 'diff', *diff_args]
             if staged:

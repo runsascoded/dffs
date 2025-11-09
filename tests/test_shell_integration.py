@@ -19,7 +19,7 @@ def test_shell_integration_bash():
         assert "alias dx='diff-x'" in output
         assert "alias cx='comm-x'" in output
         assert "alias gdx='git diff-x'" in output
-        assert "alias gdxc='git diff-x -c'" in output
+        assert "alias gdxs='git diff-x --cached'" in output
         assert "alias cx1='comm-x -1'" in output
 
         # Check for header comment
@@ -39,7 +39,7 @@ def test_shell_integration_filter_diff_x():
 
         # Should have diff-x aliases
         assert "alias dx='diff-x'" in output
-        assert "alias dxc='diff-x -c'" in output
+        assert "alias dxw='diff-x -w'" in output
 
         # Should NOT have comm-x or git-diff-x aliases
         assert "alias cx='comm-x'" not in output
@@ -79,7 +79,7 @@ def test_shell_integration_filter_git_diff_x():
 
         # Should have git-diff-x aliases
         assert "alias gdx='git diff-x'" in output
-        assert "alias gdxc='git diff-x -c'" in output
+        assert "alias gdxs='git diff-x --cached'" in output
 
         # Should NOT have diff-x or comm-x aliases
         assert "alias dx='diff-x'" not in output

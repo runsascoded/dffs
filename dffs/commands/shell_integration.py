@@ -51,9 +51,9 @@ def shell_integration(shell: str | None, cli: str | None = None) -> None:
 
                 # Determine section header
                 section_map = {
-                    'diff-x': '# Core diff-x aliases',
+                    'diff-x': '# Core diff-x aliases (color enabled by default)',
                     'comm-x': '# Core comm-x aliases',
-                    'git-diff-x': '# Core git-diff-x aliases',
+                    'git-diff-x': '# Core git-diff-x aliases (color enabled by default)',
                 }
                 section_header = section_map.get(cli)
 
@@ -61,21 +61,24 @@ def shell_integration(shell: str | None, cli: str | None = None) -> None:
                     err(f"Error: Unknown CLI '{cli}'. Valid options: diff-x, comm-x, git-diff-x")
                     exit(1)
 
-                # Output header comments
+                # Output header comments and section
                 for line in lines:
                     if line.startswith('# dffs shell integration') or \
                        line.startswith('# Install dffs') or \
                        line.startswith('# Add to your'):
                         output_lines.append(line)
                     elif line.strip() == '':
-                        if not in_section:
-                            output_lines.append(line)
+                        output_lines.append(line)
                     elif line.startswith('# Core '):
                         in_section = (line == section_header)
                         if in_section:
                             output_lines.append(line)
                     elif in_section and line.startswith('alias '):
                         output_lines.append(line)
+
+                # Remove trailing blank lines
+                while output_lines and output_lines[-1] == '':
+                    output_lines.pop()
 
                 print('\n'.join(output_lines))
             else:

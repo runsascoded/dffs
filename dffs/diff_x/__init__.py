@@ -7,7 +7,7 @@ from click import option, command
 from dffs.cli import args, shell_exec_opt, no_shell_opt, verbose_opt, exec_cmd_opt
 from dffs.utils import join_pipelines
 
-color_opt = option('-c', '--color', is_flag=True, help='Colorize the output')
+color_opt = option('-c', '--color/--no-color', default=True, help='Colorize the output (default: enabled)')
 unified_opt = option('-U', '--unified', type=int, help='Number of lines of context to show (passes through to `diff`)')
 ignore_whitespace_opt = option('-w', '--ignore-whitespace', is_flag=True, help="Ignore whitespace differences (pass `-w` to `diff`)")
 

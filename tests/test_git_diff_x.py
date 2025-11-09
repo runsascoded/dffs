@@ -79,6 +79,26 @@ class TestGitDiffXOptions:
         result = runner.invoke(main, ['-r', 'HEAD', '-R', 'HEAD', 'test.txt'], cwd=str(git_repo))
         assert result.exit_code != 0
 
+    def test_cached_flag(self, git_repo):
+        """Test -C/--cached flag to compare HEAD vs staged changes."""
+        test_file = git_repo / 'test.txt'
+        test_file.write_text('foo\nstaged\n')
+        subprocess.run(['git', 'add', 'test.txt'], cwd=git_repo, check=True, capture_output=True)
+
+        runner = CliRunner()
+        result = runner.invoke(main, ['-C', 'test.txt'], cwd=str(git_repo))
+        assert result.exit_code == 1  # Should have differences between HEAD and staged
+
+    def test_cached_with_pipeline(self, git_repo):
+        """Test -C/--cached flag with pipeline command."""
+        test_file = git_repo / 'test.txt'
+        test_file.write_text('line1\nline2\nline3\n')  # 3 lines
+        subprocess.run(['git', 'add', 'test.txt'], cwd=git_repo, check=True, capture_output=True)
+
+        runner = CliRunner()
+        result = runner.invoke(main, ['-C', 'wc -l', 'test.txt'], cwd=str(git_repo))
+        assert result.exit_code == 1  # Different line count (2 vs 3)
+
     def test_color_flag(self, git_repo):
         """Test -c/--color flag."""
         test_file = git_repo / 'test.txt'

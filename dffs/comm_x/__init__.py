@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Tuple
-
 from click import option, command
 from utz import process
 
@@ -27,8 +25,8 @@ def main(
     shell_executable: str | None,
     no_shell: bool,
     verbose: bool,
-    exec_cmds: Tuple[str, ...],
-    args: Tuple[str, ...],
+    exec_cmds: tuple[str, ...],
+    args: tuple[str, ...],
 ):
     """Select or reject lines common to two input streams, after running each through a pipeline of other commands."""
     if len(args) < 2:

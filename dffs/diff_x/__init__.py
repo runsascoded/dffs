@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import subprocess
-from typing import Tuple
 
 from click import option, command
 
@@ -29,8 +28,8 @@ def main(
     unified: int | None,
     verbose: bool,
     ignore_whitespace: bool,
-    exec_cmds: Tuple[str, ...],
-    args: Tuple[str, ...],
+    exec_cmds: tuple[str, ...],
+    args: tuple[str, ...],
 ):
     """Diff two files after running them through a pipeline of other commands."""
     if len(args) < 2:

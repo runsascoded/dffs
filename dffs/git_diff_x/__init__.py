@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import shlex
 from shlex import quote
-from typing import Tuple
 
 from click import option, argument, command
 from utz import process, err
@@ -34,8 +33,8 @@ def main(
     unified: int | None,
     verbose: bool,
     ignore_whitespace: bool,
-    exec_cmds: Tuple[str, ...],
-    args: Tuple[str, ...],
+    exec_cmds: tuple[str, ...],
+    args: tuple[str, ...],
 ):
     """Diff files at two commits, or one commit and the current worktree, after applying an optional command pipeline.
 

@@ -3,7 +3,7 @@
 # Add to your ~/.bashrc or ~/.zshrc:
 #   eval "$(dffs-shell-integration bash)"
 
-# Core diff-x aliases (color enabled by default)
+# Core diff-x aliases (color auto-enabled in TTY)
 alias dx='diff-x'
 alias dxc='diff-x'
 alias dxn='diff-x --no-color'
@@ -20,7 +20,7 @@ alias cx12='comm-x -12'
 alias cx13='comm-x -13'
 alias cx23='comm-x -23'
 
-# Core git-diff-x aliases (color enabled by default)
+# Core git-diff-x aliases (color auto-enabled in TTY)
 alias gdx='git diff-x'
 alias gdxc='git diff-x'
 alias gdxn='git diff-x --no-color'

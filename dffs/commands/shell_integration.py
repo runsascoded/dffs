@@ -51,9 +51,9 @@ def shell_integration(shell: str | None, cli: str | None = None) -> None:
 
                 # Determine section header
                 section_map = {
-                    'diff-x': '# Core diff-x aliases (color enabled by default)',
+                    'diff-x': '# Core diff-x aliases (color auto-enabled in TTY)',
                     'comm-x': '# Core comm-x aliases',
-                    'git-diff-x': '# Core git-diff-x aliases (color enabled by default)',
+                    'git-diff-x': '# Core git-diff-x aliases (color auto-enabled in TTY)',
                 }
                 section_header = section_map.get(cli)
 

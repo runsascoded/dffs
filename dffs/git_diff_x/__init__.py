@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import shlex
+import sys
 from shlex import quote
 
 from click import option, argument, command
@@ -83,10 +84,13 @@ def main(
     else:
         raise ValueError(f"Invalid refspec: {refspec}")
 
+    # Auto-detect color based on TTY if not explicitly set
+    use_color = color if color is not None else sys.stdout.isatty()
+
     diff_args = [
         *(['-w'] if ignore_whitespace else []),
         *(['-U', str(unified)] if unified is not None else []),
-        *(['--color=always'] if color else []),
+        *(['--color=always'] if use_color else []),
     ]
     for path in paths:
         if len(paths) > 1:

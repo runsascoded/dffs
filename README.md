@@ -35,7 +35,8 @@ diff-x
 #   Diff two files after running them through a pipeline of other commands.
 #
 # Options:
-#   -c, --color / --no-color     Colorize the output (default: enabled)
+#   -c, --color / --no-color     Colorize the output (default: auto, based on
+#                                TTY)
 #   -s, --shell-executable TEXT  Shell to use for executing commands; defaults
 #                                to $SHELL
 #   -S, --no-shell               Don't pass `shell=True` to Python
@@ -185,7 +186,8 @@ git-diff-x --help
 #
 # Options:
 #   -C, --cached                 Compare HEAD vs. staged changes (index)
-#   -c, --color / --no-color     Colorize the output (default: enabled)
+#   -c, --color / --no-color     Colorize the output (default: auto, based on
+#                                TTY)
 #   -r, --refspec TEXT           <commit 1>..<commit 2> (compare two commits) or
 #                                <commit> (compare <commit> to the worktree)
 #   -R, --ref TEXT               Diff a specific commit; alias for `-r
@@ -211,9 +213,9 @@ Compare line-count (`wc -l`) of this README, before and after commit `8b7a761`:
 ```bash
 git-diff-x -R 8b7a761 'wc -l' README.md
 # 1c1
-# [31m< 16[m
+# < 16
 # ---
-# [32m> 206[m
+# > 206
 ```
 
 Examples from `--help` above:

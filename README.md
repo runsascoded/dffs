@@ -185,13 +185,13 @@ git-diff-x --help
 #   git diff-x 'sort -rn' head - file1 file2
 #
 # Options:
-#   -C, --cached                 Compare HEAD vs. staged changes (index)
 #   -c, --color / --no-color     Colorize the output (default: auto, based on
 #                                TTY)
 #   -r, --refspec TEXT           <commit 1>..<commit 2> (compare two commits) or
 #                                <commit> (compare <commit> to the worktree)
 #   -R, --ref TEXT               Diff a specific commit; alias for `-r
 #                                <ref>^..<ref>`
+#   -t, --staged                 Compare HEAD vs. staged changes (index)
 #   -s, --shell-executable TEXT  Shell to use for executing commands; defaults
 #                                to $SHELL
 #   -S, --no-shell               Don't pass `shell=True` to Python

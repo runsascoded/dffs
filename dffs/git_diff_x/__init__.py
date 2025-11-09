@@ -13,10 +13,10 @@ from dffs.utils import join_pipelines
 
 
 @command('git-diff-x', short_help='Diff a Git-tracked file at two commits (or one commit vs. current worktree), optionally passing both through another command first')
-@option('-C', '--cached', 'staged', is_flag=True, help='Compare HEAD vs. staged changes (index)')
 @color_opt
 @option('-r', '--refspec', help='<commit 1>..<commit 2> (compare two commits) or <commit> (compare <commit> to the worktree)')
 @option('-R', '--ref', help="Diff a specific commit; alias for `-r <ref>^..<ref>`")
+@option('-t', '--staged', is_flag=True, help='Compare HEAD vs. staged changes (index)')
 @shell_exec_opt
 @no_shell_opt
 @unified_opt

@@ -8,18 +8,21 @@ from utz import err
 from utz.cli import arg
 
 
-def shell_integration(shell: str | None) -> None:
+def shell_integration(shell: str | None, cli: str | None = None) -> None:
     """Output shell aliases for dffs commands.
 
     Usage:
         # Bash/Zsh: Add to your ~/.bashrc or ~/.zshrc:
-        eval "$(diff-x shell-integration bash)"
+        eval "$(dffs-shell-integration bash)"
+
+        # For specific CLI only:
+        eval "$(dffs-shell-integration bash diff-x)"
 
         # Fish: Add to your ~/.config/fish/config.fish:
-        diff-x shell-integration fish | source
+        dffs-shell-integration fish | source
 
         # Or save to a file and source it:
-        diff-x shell-integration bash > ~/.dffs-aliases.sh
+        dffs-shell-integration bash > ~/.dffs-aliases.sh
         echo 'source ~/.dffs-aliases.sh' >> ~/.bashrc
     """
     # Auto-detect shell if not specified
@@ -38,7 +41,46 @@ def shell_integration(shell: str | None) -> None:
 
     if shell_file.exists():
         with open(shell_file, 'r') as f:
-            print(f.read())
+            content = f.read()
+
+            # Filter by CLI if specified
+            if cli:
+                lines = content.split('\n')
+                output_lines = []
+                in_section = False
+
+                # Determine section header
+                section_map = {
+                    'diff-x': '# Core diff-x aliases',
+                    'comm-x': '# Core comm-x aliases',
+                    'git-diff-x': '# Core git-diff-x aliases',
+                }
+                section_header = section_map.get(cli)
+
+                if not section_header:
+                    err(f"Error: Unknown CLI '{cli}'. Valid options: diff-x, comm-x, git-diff-x")
+                    exit(1)
+
+                # Output header comments
+                for line in lines:
+                    if line.startswith('# dffs shell integration') or \
+                       line.startswith('# Install dffs') or \
+                       line.startswith('# Add to your'):
+                        output_lines.append(line)
+                    elif line.strip() == '':
+                        if not in_section:
+                            output_lines.append(line)
+                    elif line.startswith('# Core '):
+                        in_section = (line == section_header)
+                        if in_section:
+                            output_lines.append(line)
+                    elif in_section and line.startswith('alias '):
+                        output_lines.append(line)
+
+                print('\n'.join(output_lines))
+            else:
+                # Output all aliases
+                print(content)
     else:
         err(f"Error: Shell integration file not found: {shell_file}")
         exit(1)
@@ -48,6 +90,8 @@ def register(cli):
     """Register command with CLI."""
     cli.command(name='shell-integration')(
         arg('shell', type=Choice(['bash', 'zsh', 'fish']), required=False)(
-            shell_integration
+            arg('cli', type=Choice(['diff-x', 'comm-x', 'git-diff-x']), required=False)(
+                shell_integration
+            )
         )
     )

@@ -28,6 +28,66 @@ def test_shell_integration_bash():
         sys.stdout = old_stdout
 
 
+def test_shell_integration_filter_diff_x():
+    """Test filtering to only diff-x aliases."""
+    old_stdout = sys.stdout
+    sys.stdout = buffer = StringIO()
+
+    try:
+        shell_integration('bash', 'diff-x')
+        output = buffer.getvalue()
+
+        # Should have diff-x aliases
+        assert "alias dx='diff-x'" in output
+        assert "alias dxc='diff-x -c'" in output
+
+        # Should NOT have comm-x or git-diff-x aliases
+        assert "alias cx='comm-x'" not in output
+        assert "alias gdx='git diff-x'" not in output
+    finally:
+        sys.stdout = old_stdout
+
+
+def test_shell_integration_filter_comm_x():
+    """Test filtering to only comm-x aliases."""
+    old_stdout = sys.stdout
+    sys.stdout = buffer = StringIO()
+
+    try:
+        shell_integration('bash', 'comm-x')
+        output = buffer.getvalue()
+
+        # Should have comm-x aliases
+        assert "alias cx='comm-x'" in output
+        assert "alias cx1='comm-x -1'" in output
+
+        # Should NOT have diff-x or git-diff-x aliases
+        assert "alias dx='diff-x'" not in output
+        assert "alias gdx='git diff-x'" not in output
+    finally:
+        sys.stdout = old_stdout
+
+
+def test_shell_integration_filter_git_diff_x():
+    """Test filtering to only git-diff-x aliases."""
+    old_stdout = sys.stdout
+    sys.stdout = buffer = StringIO()
+
+    try:
+        shell_integration('bash', 'git-diff-x')
+        output = buffer.getvalue()
+
+        # Should have git-diff-x aliases
+        assert "alias gdx='git diff-x'" in output
+        assert "alias gdxc='git diff-x -c'" in output
+
+        # Should NOT have diff-x or comm-x aliases
+        assert "alias dx='diff-x'" not in output
+        assert "alias cx='comm-x'" not in output
+    finally:
+        sys.stdout = old_stdout
+
+
 def test_shell_integration_auto_detect():
     """Test that shell-integration auto-detects shell from environment."""
     import os

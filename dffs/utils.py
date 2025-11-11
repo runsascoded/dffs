@@ -3,7 +3,8 @@ from __future__ import annotations
 from functools import cache
 from os import environ as env, getcwd
 from os.path import relpath
-from subprocess import Popen
+from subprocess import Popen, PIPE
+from sys import stdout
 
 from utz import err, named_pipes, pipeline, process
 
@@ -57,7 +58,8 @@ def join_pipelines(
             pipe1,
             pipe2,
         ]
-        proc = Popen(join_cmd)
+        # Capture stdout so we can suppress it if a pipeline fails
+        proc = Popen(join_cmd, stdout=PIPE)
         processes = [proc]
 
         for pipe, cmds in ((pipe1, cmds1), (pipe2, cmds2)):
@@ -73,13 +75,13 @@ def join_pipelines(
                 **kwargs,
             )
 
-        for p in processes:
-            p.wait()
-
-        # Check pipeline processes first (all except base_cmd which is processes[0])
-        # Pipeline commands should succeed (returncode 0)
+        # Wait for pipeline processes first (all except base_cmd which is processes[0])
+        # Check if any failed before waiting for base_cmd
+        pipeline_failed = False
         for p in processes[1:]:
+            p.wait()
             if p.returncode != 0:
+                pipeline_failed = True
                 # Print stderr from failed process if available
                 if p.stderr:
                     stderr_output = p.stderr.read()
@@ -87,9 +89,24 @@ def join_pipelines(
                         if isinstance(stderr_output, bytes):
                             stderr_output = stderr_output.decode('utf-8', errors='replace')
                         err(stderr_output.rstrip())
-                return p.returncode
 
-        # Return base_cmd exit code (may be 0, 1 for diff, or error code)
+        # Wait for base_cmd and capture its output
+        processes[0].wait()
+        base_stdout = processes[0].stdout.read() if processes[0].stdout else b''
+
+        # If any pipeline failed, suppress base_cmd output and return error code
+        if pipeline_failed:
+            for p in processes[1:]:
+                if p.returncode != 0:
+                    return p.returncode
+
+        # Pipeline succeeded - print base_cmd output and return its exit code
+        if base_stdout:
+            if isinstance(base_stdout, bytes):
+                base_stdout = base_stdout.decode('utf-8', errors='replace')
+            stdout.write(base_stdout)
+            stdout.flush()
+
         return processes[0].returncode
 
 

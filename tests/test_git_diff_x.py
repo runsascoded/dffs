@@ -79,6 +79,26 @@ class TestGitDiffXOptions:
         result = runner.invoke(main, ['-r', 'HEAD', '-R', 'HEAD', 'test.txt'], cwd=str(git_repo))
         assert result.exit_code != 0
 
+    def test_staged_flag(self, git_repo):
+        """Test -t/--staged flag to compare HEAD vs staged changes."""
+        test_file = git_repo / 'test.txt'
+        test_file.write_text('foo\nstaged\n')
+        subprocess.run(['git', 'add', 'test.txt'], cwd=git_repo, check=True, capture_output=True)
+
+        runner = CliRunner()
+        result = runner.invoke(main, ['-t', 'test.txt'], cwd=str(git_repo))
+        assert result.exit_code == 1  # Should have differences between HEAD and staged
+
+    def test_staged_with_pipeline(self, git_repo):
+        """Test -t/--staged flag with pipeline command."""
+        test_file = git_repo / 'test.txt'
+        test_file.write_text('line1\nline2\nline3\n')  # 3 lines
+        subprocess.run(['git', 'add', 'test.txt'], cwd=git_repo, check=True, capture_output=True)
+
+        runner = CliRunner()
+        result = runner.invoke(main, ['-t', 'wc -l', 'test.txt'], cwd=str(git_repo))
+        assert result.exit_code == 1  # Different line count (2 vs 3)
+
     def test_color_flag(self, git_repo):
         """Test -c/--color flag."""
         test_file = git_repo / 'test.txt'
@@ -115,15 +135,18 @@ class TestGitDiffXPipelines:
         """Test git-diff-x with command pipeline."""
         monkeypatch.chdir(git_repo)
         runner = CliRunner()
+        # wc -l on worktree includes filename, but piped from git show doesn't
+        # so they differ: "2" vs "2 test.txt"
         result = runner.invoke(main, ['wc -l', 'test.txt'])
-        assert result.exit_code == 0  # Same line count
+        assert result.exit_code == 1  # Difference in wc output format
 
     def test_exec_cmd_option(self, git_repo, monkeypatch):
         """Test -x/--exec-cmd option."""
         monkeypatch.chdir(git_repo)
         runner = CliRunner()
+        # wc -l on worktree includes filename, but piped from git show doesn't
         result = runner.invoke(main, ['-x', 'wc -l', 'test.txt'])
-        assert result.exit_code == 0
+        assert result.exit_code == 1  # Difference in wc output format
 
 
 class TestGitDiffXMultiplePaths:

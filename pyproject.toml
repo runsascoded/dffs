@@ -34,6 +34,7 @@ Homepage = "https://github.com/runsascoded/dffs"
 diff-x = "dffs.diff_x:main"
 comm-x = "dffs.comm_x:main"
 git-diff-x = "dffs.git_diff_x:main"
+dffs-shell-integration = "dffs.shell_integration_cli:main"
 
 [dependency-groups]
 dev = [

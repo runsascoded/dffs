@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import shlex
-from typing import Tuple
+import sys
+from shlex import quote
 
 from click import option, argument, command
 from utz import process, err
@@ -15,6 +16,7 @@ from dffs.utils import join_pipelines
 @color_opt
 @option('-r', '--refspec', help='<commit 1>..<commit 2> (compare two commits) or <commit> (compare <commit> to the worktree)')
 @option('-R', '--ref', help="Diff a specific commit; alias for `-r <ref>^..<ref>`")
+@option('-t', '--staged', is_flag=True, help='Compare HEAD vs. staged changes (index)')
 @shell_exec_opt
 @no_shell_opt
 @unified_opt
@@ -26,13 +28,14 @@ def main(
     color: bool,
     refspec: str | None,
     ref: str | None,
+    staged: bool,
     shell_executable: str | None,
     no_shell: bool,
     unified: int | None,
     verbose: bool,
     ignore_whitespace: bool,
-    exec_cmds: Tuple[str, ...],
-    args: Tuple[str, ...],
+    exec_cmds: tuple[str, ...],
+    args: tuple[str, ...],
 ):
     """Diff files at two commits, or one commit and the current worktree, after applying an optional command pipeline.
 
@@ -63,10 +66,12 @@ def main(
     shell = not no_shell
     git_relpath_prefix = process.line('git', 'rev-parse', '--show-prefix', log=False)
 
-    if refspec and ref:
-        raise ValueError("Specify -r/--refspec xor -R/--ref")
+    if sum([bool(refspec), bool(ref), staged]) > 1:
+        raise ValueError("Specify at most one of -r/--refspec, -R/--ref, -C/--cached")
     if ref:
         refspec = f'{ref}^..{ref}'
+    elif staged:
+        refspec = 'HEAD'
     elif not refspec:
         refspec = 'HEAD'
 
@@ -79,26 +84,35 @@ def main(
     else:
         raise ValueError(f"Invalid refspec: {refspec}")
 
+    # Auto-detect color based on TTY if not explicitly set
+    use_color = color if color is not None else sys.stdout.isatty()
+
     diff_args = [
         *(['-w'] if ignore_whitespace else []),
         *(['-U', str(unified)] if unified is not None else []),
-        *(['--color=always'] if color else []),
+        *(['--color=always'] if use_color else []),
     ]
     for path in paths:
         if len(paths) > 1:
             err(path)
         if cmds:
-            cmds1 = [ f'git show {ref1}:{git_relpath_prefix}{path}', *cmds ]
+            git_path = f'{git_relpath_prefix}{path}'
+            cmds1 = [ f'git show {ref1}:{quote(git_path)}', *cmds ]
             if ref2:
-                cmds2 = [ f'git show {ref2}:{git_relpath_prefix}{path}', *cmds ]
+                cmds2 = [ f'git show {ref2}:{quote(git_path)}', *cmds ]
             else:
                 cmd, *sub_cmds = cmds
-                cmds2 = [ f'{cmd} {path}', *sub_cmds ]
+                if staged:
+                    # Use :0: to read from index (staged version)
+                    cmds2 = [ f'git show :0:{quote(git_path)} | {cmd}', *sub_cmds ]
+                else:
+                    # Read from worktree
+                    cmds2 = [ f'{cmd} {quote(path)}', *sub_cmds ]
             if not shell:
                 cmds1 = [ shlex.split(c) for c in cmds1 ]
                 cmds2 = [ shlex.split(c) for c in cmds2 ]
 
-            join_pipelines(
+            returncode = join_pipelines(
                 base_cmd=['diff', *diff_args],
                 cmds1=cmds1,
                 cmds2=cmds2,
@@ -106,5 +120,10 @@ def main(
                 shell=not no_shell,
                 executable=shell_executable,
             )
+            raise SystemExit(returncode)
         else:
-            process.run(['git', 'diff', *diff_args, refspec, '--', path])
+            git_diff_args = ['git', 'diff', *diff_args]
+            if staged:
+                git_diff_args.append('--cached')
+            git_diff_args.extend([refspec, '--', path])
+            process.run(git_diff_args)

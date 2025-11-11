@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Tuple
-
 from click import option, command
 from utz import process
 
@@ -27,8 +25,8 @@ def main(
     shell_executable: str | None,
     no_shell: bool,
     verbose: bool,
-    exec_cmds: Tuple[str, ...],
-    args: Tuple[str, ...],
+    exec_cmds: tuple[str, ...],
+    args: tuple[str, ...],
 ):
     """Select or reject lines common to two input streams, after running each through a pipeline of other commands."""
     if len(args) < 2:
@@ -38,7 +36,7 @@ def main(
     cmds = list(exec_cmds) + cmds
     if cmds:
         first, *rest = cmds
-        join_pipelines(
+        returncode = join_pipelines(
             base_cmd=[
                 'comm',
                 *(['-1'] if exclude_1 else []),
@@ -52,5 +50,6 @@ def main(
             shell=not no_shell,
             executable=shell_executable,
         )
+        raise SystemExit(returncode)
     else:
         process.run(['comm', path1, path2])

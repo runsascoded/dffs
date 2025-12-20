@@ -14,7 +14,7 @@ authors = [
 requires-python = ">=3.10"
 dependencies = [
     "click",
-    "utz>=0.13.0",
+    "utz>=0.21.5",
 ]
 
 [project.optional-dependencies]

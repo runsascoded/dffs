@@ -7,7 +7,7 @@ from shlex import quote
 from click import option, argument, command
 from utz import process, err
 
-from dffs.cli import shell_exec_opt, no_shell_opt, verbose_opt, exec_cmd_opt
+from dffs.cli import shell_exec_opt, no_shell_opt, pipefail_opt, verbose_opt, exec_cmd_opt
 from dffs.diff_x import color_opt, unified_opt, ignore_whitespace_opt
 from dffs.utils import join_pipelines
 
@@ -17,6 +17,7 @@ from dffs.utils import join_pipelines
 @option('-r', '--refspec', help='<commit 1>..<commit 2> (compare two commits) or <commit> (compare <commit> to the worktree)')
 @option('-R', '--ref', help="Diff a specific commit; alias for `-r <ref>^..<ref>`")
 @option('-t', '--staged', is_flag=True, help='Compare HEAD vs. staged changes (index)')
+@pipefail_opt
 @shell_exec_opt
 @no_shell_opt
 @unified_opt
@@ -29,6 +30,7 @@ def main(
     refspec: str | None,
     ref: str | None,
     staged: bool,
+    pipefail: bool,
     shell_executable: str | None,
     no_shell: bool,
     unified: int | None,
@@ -119,6 +121,7 @@ def main(
                 verbose=verbose,
                 shell=not no_shell,
                 executable=shell_executable,
+                pipefail=pipefail,
             )
             raise SystemExit(returncode)
         else:

@@ -5,7 +5,7 @@ import sys
 
 from click import option, command
 
-from dffs.cli import args, shell_exec_opt, no_shell_opt, verbose_opt, exec_cmd_opt
+from dffs.cli import args, shell_exec_opt, no_shell_opt, pipefail_opt, verbose_opt, exec_cmd_opt
 from dffs.utils import join_pipelines
 
 color_opt = option('-c', '--color/--no-color', default=None, help='Colorize the output (default: auto, based on TTY)')
@@ -15,6 +15,7 @@ ignore_whitespace_opt = option('-w', '--ignore-whitespace', is_flag=True, help="
 
 @command('diff-x', short_help='Diff two files after running them through a pipeline of other commands', no_args_is_help=True)
 @color_opt
+@pipefail_opt
 @shell_exec_opt
 @no_shell_opt
 @unified_opt
@@ -24,6 +25,7 @@ ignore_whitespace_opt = option('-w', '--ignore-whitespace', is_flag=True, help="
 @args
 def main(
     color: bool,
+    pipefail: bool,
     shell_executable: str | None,
     no_shell: bool,
     unified: int | None,
@@ -56,6 +58,7 @@ def main(
             verbose=verbose,
             shell=not no_shell,
             executable=shell_executable,
+            pipefail=pipefail,
         )
         raise SystemExit(returncode)
     else:

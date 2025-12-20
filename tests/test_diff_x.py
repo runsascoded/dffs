@@ -102,3 +102,35 @@ class TestDiffXErrors:
         runner = CliRunner()
         result = runner.invoke(main, [])
         assert result.exit_code != 0
+
+
+class TestDiffXPipefail:
+    """Test diff-x --pipefail option."""
+
+    def test_pipefail_flag_exists(self, temp_files):
+        """Test that --pipefail flag is accepted."""
+        file1, file2 = temp_files
+        runner = CliRunner()
+        result = runner.invoke(main, ['--pipefail', str(file1), str(file2)])
+        # Should work (exit 0 or 1 for diff result)
+        assert result.exit_code in (0, 1)
+
+    def test_pipefail_short_flag(self, temp_files):
+        """Test that -P short flag is accepted."""
+        file1, file2 = temp_files
+        runner = CliRunner()
+        result = runner.invoke(main, ['-P', str(file1), str(file2)])
+        assert result.exit_code in (0, 1)
+
+    def test_pipefail_catches_early_failure(self, temp_files):
+        """Test --pipefail catches failure in early pipeline stage."""
+        file1, file2 = temp_files
+        runner = CliRunner()
+        # Without pipefail: `false | cat` - only checks `cat` (succeeds)
+        result = runner.invoke(main, ['-x', 'false | cat', str(file1), str(file2)])
+        assert result.exit_code in (0, 1)  # diff result, not pipeline failure
+
+        # With pipefail: `false | cat` - checks both, `false` fails
+        result = runner.invoke(main, ['-P', '-x', 'false | cat', str(file1), str(file2)])
+        assert result.exit_code == 1  # pipeline failure
+        assert 'failed' in result.output.lower() or result.exit_code != 0

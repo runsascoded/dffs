@@ -37,6 +37,9 @@ diff-x
 # Options:
 #   -c, --color / --no-color     Colorize the output (default: auto, based on
 #                                TTY)
+#   -P, --pipefail               Check all pipeline commands for errors (like
+#                                bash's `set -o pipefail`); default only checks
+#                                last command
 #   -s, --shell-executable TEXT  Shell to use for executing commands; defaults
 #                                to $SHELL
 #   -S, --no-shell               Don't pass `shell=True` to Python
@@ -192,6 +195,9 @@ git-diff-x --help
 #   -R, --ref TEXT               Diff a specific commit; alias for `-r
 #                                <ref>^..<ref>`
 #   -t, --staged                 Compare HEAD vs. staged changes (index)
+#   -P, --pipefail               Check all pipeline commands for errors (like
+#                                bash's `set -o pipefail`); default only checks
+#                                last command
 #   -s, --shell-executable TEXT  Shell to use for executing commands; defaults
 #                                to $SHELL
 #   -S, --no-shell               Don't pass `shell=True` to Python

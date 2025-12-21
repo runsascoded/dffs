@@ -161,9 +161,9 @@ comm-x sort 1.txt 2.txt
 ### `git-diff-x` <a id="git-diff-x"></a>
 
 #### Usage <a id="git-diff-x-usage"></a>
-<!-- `bmdf -- git-diff-x --help` -->
+<!-- `bmdf -- git-diff-x` -->
 ```bash
-git-diff-x --help
+git-diff-x
 # Usage: git-diff-x [OPTIONS] [exec_cmd...] [<path> | - [paths...]]
 #
 #   Diff files at two commits, or one commit and the current worktree, after

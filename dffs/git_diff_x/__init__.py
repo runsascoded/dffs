@@ -12,7 +12,7 @@ from dffs.diff_x import color_opt, unified_opt, ignore_whitespace_opt
 from dffs.utils import join_pipelines
 
 
-@command('git-diff-x', short_help='Diff a Git-tracked file at two commits (or one commit vs. current worktree), optionally passing both through another command first')
+@command('git-diff-x', short_help='Diff a Git-tracked file at two commits (or one commit vs. current worktree), optionally passing both through another command first', no_args_is_help=True)
 @color_opt
 @option('-r', '--refspec', help='<commit 1>..<commit 2> (compare two commits) or <commit> (compare <commit> to the worktree)')
 @option('-R', '--ref', help="Diff a specific commit; alias for `-r <ref>^..<ref>`")

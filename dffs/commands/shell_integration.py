@@ -49,17 +49,20 @@ def shell_integration(shell: str | None, cli: str | None = None) -> None:
                 output_lines = []
                 in_section = False
 
-                # Determine section header
-                section_map = {
-                    'diff-x': '# Core diff-x aliases (color auto-enabled in TTY)',
-                    'comm-x': '# Core comm-x aliases',
-                    'git-diff-x': '# Core git-diff-x aliases (color auto-enabled in TTY)',
+                # Section matching: prefixes that indicate a section belongs to cli
+                section_prefixes = {
+                    'diff-x': ['# Core diff-x aliases'],
+                    'comm-x': ['# Core comm-x aliases'],
+                    'git-diff-x': ['# Core git-diff-x aliases', '# git-diff-x with'],
                 }
-                section_header = section_map.get(cli)
+                prefixes = section_prefixes.get(cli)
 
-                if not section_header:
+                if not prefixes:
                     err(f"Error: Unknown CLI '{cli}'. Valid options: diff-x, comm-x, git-diff-x")
                     exit(1)
+
+                def is_section_for_cli(line: str) -> bool:
+                    return any(line.startswith(p) for p in prefixes)
 
                 # Output header comments and section
                 in_header = True
@@ -67,11 +70,13 @@ def shell_integration(shell: str | None, cli: str | None = None) -> None:
                     if line.startswith('# dffs shell integration') or \
                        line.startswith('# Install dffs') or \
                        line.startswith('# Add to your') or \
-                       line.startswith('#   eval'):
+                       line.startswith('#   ') or \
+                       line.startswith('# Suffix conventions'):
                         output_lines.append(line)
-                    elif line.startswith('# Core '):
+                    elif line.startswith('# ') and not line.startswith('#  '):
+                        # Section header line
                         in_header = False
-                        in_section = (line == section_header)
+                        in_section = is_section_for_cli(line)
                         if in_section:
                             output_lines.append(line)
                     elif in_section and line.startswith('alias '):

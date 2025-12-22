@@ -14,6 +14,7 @@ Pipe and diff files: execute shell pipelines, diff/compare/join results.
     - [`git-diff-x`](#git-diff-x)
         - [Usage](#git-diff-x-usage)
         - [Examples](#git-diff-x-examples)
+- [Shell Integration](#shell-integration)
 <!-- /toc -->
 
 ## Install <a id="install"></a>
@@ -239,38 +240,42 @@ git diff-x -c md5sum foo
 git diff-x 'sort -rn' head - file1 file2
 ```
 
-I use `git-diff-x` via several Git and Bash aliases:
+## Shell Integration <a id="shell-integration"></a>
 
-[`.gitconfig`][diff-x git configs]:
-```.gitconfig
-[alias]
-  ; pip install dffs
-  dx = diff-x
-  dxc = diff-x -c
-  dxcr = diff-x -cR
-  dxcrr = diff-x -cr
-  dxr = diff-x -R
-  dxrr = diff-x -r
-  dxw = diff-x -w
-  dxwr = diff-x -wR
-  dxwrr = diff-x -wr
+Add convenient aliases to your shell by adding this to your `~/.bashrc` or `~/.zshrc`:
+
+```bash
+eval "$(dffs-shell-integration bash)"
 ```
 
-[`.git-rc`][diff-x aliases]:
+This provides aliases with the following suffix conventions:
+- `c` = color, `n` = no-color, `w` = ignore-whitespace
+- `r` = ref (`-R`, compare commit to parent), `s` = refspec (`-r`), `t` = staged (`--staged`)
+
+### Examples
+
+| Alias | Expands to |
+|-------|------------|
+| `dx` | `diff-x` |
+| `dxc` | `diff-x --color` |
+| `cx` | `comm-x` |
+| `gdx` | `git diff-x` |
+| `gdxc` | `git diff-x --color` |
+| `gdxr` | `git diff-x -R` (compare commit to parent) |
+| `gdxs` | `git diff-x -r` (explicit refspec) |
+| `gdxt` | `git diff-x --staged` |
+| `gdxrc` | `git diff-x -R --color` |
+| `gdxtw` | `git diff-x --staged -w` |
+
+To see all available aliases:
 ```bash
-alias gdx="g dx"
-alias gdxc="g dxc"
-alias gdxcr="g dxcr"
-alias gdxcrr="g dxcrr"
-alias gdxr="g dxr"
-alias gdxrr="g dxrr"
-alias gdxw="g dxw"
-alias gdxwr="g dxwr"
-alias gdxwrr="g dxwrr"
+dffs-shell-integration bash
+```
+
+To load only aliases for a specific command:
+```bash
+eval "$(dffs-shell-integration bash git-diff-x)"
 ```
 
 [`jq`]: https://stedolan.github.io/jq/
 [PyPI]: https://pypi.org/project/dffs/
-
-[diff-x git configs]: https://github.com/ryan-williams/git-helpers/blob/5f27c2e4e88e3e14ede21483c998bdbe2cfccc6f/diff/.gitconfig#L64-L73
-[diff-x aliases]: https://github.com/ryan-williams/git-helpers/blob/5f27c2e4e88e3e14ede21483c998bdbe2cfccc6f/diff/.git-rc#L59-L67

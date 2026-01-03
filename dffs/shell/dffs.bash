@@ -32,22 +32,22 @@ alias gdxwc='git diff-x -w --color'
 alias gdxwn='git diff-x -w --no-color'
 
 # git-diff-x with ref (r = -R, compare commit to parent)
+# Note: -R requires an arg, so other flags must come before it
 alias gdxr='git diff-x -R'
-alias gdxrc='git diff-x -R --color'
 alias gdxcr='git diff-x --color -R'
-alias gdxrn='git diff-x -R --no-color'
-alias gdxrw='git diff-x -R -w'
-alias gdxrwc='git diff-x -R -w --color'
-alias gdxrwn='git diff-x -R -w --no-color'
+alias gdxnr='git diff-x --no-color -R'
+alias gdxwr='git diff-x -w -R'
+alias gdxwcr='git diff-x -w --color -R'
+alias gdxwnr='git diff-x -w --no-color -R'
 
 # git-diff-x with refspec (s = -r, explicit refspec)
+# Note: -r requires an arg, so other flags must come before it
 alias gdxs='git diff-x -r'
-alias gdxsc='git diff-x -r --color'
 alias gdxcs='git diff-x --color -r'
-alias gdxsn='git diff-x -r --no-color'
-alias gdxsw='git diff-x -r -w'
-alias gdxswc='git diff-x -r -w --color'
-alias gdxswn='git diff-x -r -w --no-color'
+alias gdxns='git diff-x --no-color -r'
+alias gdxws='git diff-x -w -r'
+alias gdxwcs='git diff-x -w --color -r'
+alias gdxwns='git diff-x -w --no-color -r'
 
 # git-diff-x with staged (t = --staged, compare HEAD vs index)
 alias gdxt='git diff-x --staged'

@@ -73,6 +73,9 @@ def shell_integration(shell: str | None, cli: str | None = None) -> None:
                        line.startswith('#   ') or \
                        line.startswith('# Suffix conventions'):
                         output_lines.append(line)
+                    elif line.startswith('# Note:') and in_section:
+                        # Include note lines within a section
+                        output_lines.append(line)
                     elif line.startswith('# ') and not line.startswith('#  '):
                         # Section header line
                         in_header = False

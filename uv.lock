@@ -3,19 +3,6 @@ revision = 3
 requires-python = ">=3.10"
 
 [[package]]
-name = "bmdf"
-version = "0.6.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "click" },
-    { name = "utz" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/96/26/e328e0770c2e2c2f9ffb6b4747a10b4b0f181356a9bb854c056fce9c77d0/bmdf-0.6.2.tar.gz", hash = "sha256:33543af835852ed2ddea3c0ee13311b1db20e0365f19653e4b8b291ff3f5e404", size = 18545, upload-time = "2025-09-10T01:15:37.458Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/bc/8b/b3a38115da8a595731283b81bb47db1a1a160ed4b8eb6dead665df88a7d4/bmdf-0.6.2-py3-none-any.whl", hash = "sha256:45089da957349367679596ae5742cd5ac4f22bc3df2df83123503990164965c3", size = 14856, upload-time = "2025-09-10T01:15:36.303Z" },
-]
-
-[[package]]
 name = "click"
 version = "8.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -151,7 +138,7 @@ dependencies = [
 
 [package.optional-dependencies]
 ci = [
-    { name = "bmdf" },
+    { name = "mdcmd" },
     { name = "pytest" },
     { name = "pytest-cov" },
 ]
@@ -168,8 +155,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "bmdf", marker = "extra == 'ci'", specifier = ">=0.4.0" },
     { name = "click" },
+    { name = "mdcmd", marker = "extra == 'ci'", specifier = ">=0.7.4" },
     { name = "pytest", marker = "extra == 'ci'", specifier = ">=7.0.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=7.0.0" },
     { name = "pytest-cov", marker = "extra == 'ci'", specifier = ">=4.0.0" },
@@ -203,6 +190,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f2/97/ebf4da567aa6827c909642694d71c9fcf53e5b504f2d96afea02718862f3/iniconfig-2.1.0.tar.gz", hash = "sha256:3abbd2e30b36733fee78f9c7f7308f2d0050e88f0087fd25c2645f63c773e1c7", size = 4793, upload-time = "2025-03-19T20:09:59.721Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2c/e1/e6716421ea10d38022b952c159d5161ca1193197fb744506875fbb87ea7b/iniconfig-2.1.0-py3-none-any.whl", hash = "sha256:9deba5723312380e77435581c6bf4935c94cbfab9b1ed33ef8d238ea168eb760", size = 6050, upload-time = "2025-03-19T20:10:01.071Z" },
+]
+
+[[package]]
+name = "mdcmd"
+version = "0.7.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "click" },
+    { name = "utz" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ad/55/1249d494aafad376f249f189437c26001654901b8ad3801624bce8596ff4/mdcmd-0.7.4.tar.gz", hash = "sha256:4c4569aadde60903c143025917e195874e9b5001aff4f217bb529d64246ac783", size = 22281, upload-time = "2025-12-20T20:02:05.426Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/41/17/da5611c420f4dfea4d52159fb72243bfd291af76bc2be2d1c6a484ca0f95/mdcmd-0.7.4-py3-none-any.whl", hash = "sha256:a05b0761eb7cb75cc3cee014a8400ef83c8f0e63c69067a9cd2dd75eb1221262", size = 16758, upload-time = "2025-12-20T20:02:04.272Z" },
 ]
 
 [[package]]

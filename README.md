@@ -28,7 +28,7 @@ pip install dffs
 ### `diff-x` <a id="diff-x"></a>
 
 #### Usage <a id="diff-x-usage"></a>
-<!-- `bmdf diff-x` -->
+<!-- `bmdf -r2 diff-x` -->
 ```bash
 diff-x
 # Usage: diff-x [OPTIONS] [exec_cmd...] <path1> <path2>
@@ -88,7 +88,7 @@ echo '{"a":1,"b":3}' | jq > 2.json
 `comm` essentially performs set intersection/difference; `comm-x` allows you to run a pipeline of commands on each input, before comparing them.
 
 #### Usage <a id="comm-x-usage"></a>
-<!-- `bmdf comm-x` -->
+<!-- `bmdf -r2 comm-x` -->
 ```bash
 comm-x
 # Usage: comm-x [OPTIONS] [exec_cmd...] <path1> <path2>
@@ -121,7 +121,7 @@ seq 10 -2 0 > 2.txt
 ```
 
 `comm` outputs gibberish, because the files aren't in sorted order:
-<!-- `bmdf comm 1.txt 2.txt` -->
+<!-- `bmdf -r1 comm 1.txt 2.txt` -->
 ```bash
 comm 1.txt 2.txt
 # 1
@@ -164,7 +164,7 @@ comm-x sort 1.txt 2.txt
 ### `git-diff-x` <a id="git-diff-x"></a>
 
 #### Usage <a id="git-diff-x-usage"></a>
-<!-- `bmdf -- git-diff-x` -->
+<!-- `bmdf -r2 -- git-diff-x` -->
 ```bash
 git-diff-x
 # Usage: git-diff-x [OPTIONS] [exec_cmd...] [<path> | - [paths...]]
@@ -219,7 +219,7 @@ git-diff-x
 
 #### Examples <a id="git-diff-x-examples"></a>
 Compare line-count (`wc -l`) of this README, before and after commit `8b7a761`:
-<!-- `bmdf -- git-diff-x -R 8b7a761 'wc -l' README.md` -->
+<!-- `bmdf -r1 -- git-diff-x -R 8b7a761 'wc -l' README.md` -->
 ```bash
 git-diff-x -R 8b7a761 'wc -l' README.md
 # 1c1

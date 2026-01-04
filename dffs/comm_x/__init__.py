@@ -3,7 +3,7 @@ from __future__ import annotations
 from click import option, command
 from utz import process
 
-from dffs.cli import args, shell_exec_opt, no_shell_opt, verbose_opt, exec_cmd_opt
+from dffs.cli import args, shell_exec_opt, no_shell_opt, verbose_opt, exec_cmd_opt, version_opt
 from dffs.utils import join_pipelines
 
 
@@ -14,6 +14,7 @@ from dffs.utils import join_pipelines
 @option('-i', '--case-insensitive', is_flag=True, help='Case insensitive comparison')
 @shell_exec_opt
 @no_shell_opt
+@version_opt
 @verbose_opt
 @exec_cmd_opt
 @args

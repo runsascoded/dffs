@@ -6,7 +6,7 @@ import sys
 
 from click import option, command
 
-from dffs.cli import args, shell_exec_opt, no_shell_opt, pipefail_opt, verbose_opt, exec_cmd_opt
+from dffs.cli import args, shell_exec_opt, no_shell_opt, pipefail_opt, verbose_opt, exec_cmd_opt, version_opt
 from dffs.utils import join_pipelines
 
 color_opt = option('-c', '--color/--no-color', default=None, help='Colorize the output (default: auto, based on TTY)')
@@ -20,6 +20,7 @@ ignore_whitespace_opt = option('-w', '--ignore-whitespace', is_flag=True, help="
 @shell_exec_opt
 @no_shell_opt
 @unified_opt
+@version_opt
 @verbose_opt
 @ignore_whitespace_opt
 @exec_cmd_opt

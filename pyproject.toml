@@ -43,3 +43,6 @@ dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
 ]
+
+[tool.hatch.build.hooks.custom]
+path = "hatch_build.py"

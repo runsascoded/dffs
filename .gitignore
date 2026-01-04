@@ -1,0 +1,7 @@
+# Generated at build time
+dffs/_build_info.py
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/

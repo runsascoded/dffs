@@ -9,7 +9,7 @@ from subprocess import call
 from click import option, argument, command
 from utz import process, err
 
-from dffs.cli import shell_exec_opt, no_shell_opt, pipefail_opt, verbose_opt, exec_cmd_opt
+from dffs.cli import shell_exec_opt, no_shell_opt, pipefail_opt, verbose_opt, exec_cmd_opt, version_opt
 from dffs.diff_x import color_opt, unified_opt, ignore_whitespace_opt
 from dffs.utils import join_pipelines
 
@@ -23,6 +23,7 @@ from dffs.utils import join_pipelines
 @shell_exec_opt
 @no_shell_opt
 @unified_opt
+@version_opt
 @verbose_opt
 @ignore_whitespace_opt
 @exec_cmd_opt

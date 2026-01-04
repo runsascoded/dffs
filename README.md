@@ -47,6 +47,7 @@ diff-x
 #                                `subprocess`es
 #   -U, --unified INTEGER        Number of lines of context to show (passes
 #                                through to `diff`)
+#   -V, --version                Show version and exit
 #   -v, --verbose                Log intermediate commands to stderr
 #   -w, --ignore-whitespace      Ignore whitespace differences (pass `-w` to
 #                                `diff`)
@@ -104,6 +105,7 @@ comm-x
 #                                to $SHELL
 #   -S, --no-shell               Don't pass `shell=True` to Python
 #                                `subprocess`es
+#   -V, --version                Show version and exit
 #   -v, --verbose                Log intermediate commands to stderr
 #   -x, --exec-cmd TEXT          Command(s) to execute before invoking `comm`;
 #                                alternate syntax to passing commands as
@@ -205,6 +207,7 @@ git-diff-x
 #                                `subprocess`es
 #   -U, --unified INTEGER        Number of lines of context to show (passes
 #                                through to `diff`)
+#   -V, --version                Show version and exit
 #   -v, --verbose                Log intermediate commands to stderr
 #   -w, --ignore-whitespace      Ignore whitespace differences (pass `-w` to
 #                                `diff`)

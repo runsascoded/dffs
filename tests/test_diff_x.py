@@ -1,7 +1,9 @@
 """Tests for diff-x CLI."""
+import signal
 import pytest
 import tempfile
 from pathlib import Path
+from unittest.mock import patch, MagicMock
 from click.testing import CliRunner
 from dffs.diff_x import main
 
@@ -134,3 +136,48 @@ class TestDiffXPipefail:
         result = runner.invoke(main, ['-P', '-x', 'false | cat', str(file1), str(file2)])
         assert result.exit_code == 1  # pipeline failure
         assert 'failed' in result.output.lower() or result.exit_code != 0
+
+
+class TestDiffXSignals:
+    """Test signal handling in diff-x."""
+
+    def test_sigpipe_exits_cleanly(self, temp_files):
+        """Test that SIGPIPE (from pager exit) results in clean exit, not traceback."""
+        file1, file2 = temp_files
+
+        # Mock subprocess.run to simulate SIGPIPE
+        mock_result = MagicMock()
+        mock_result.returncode = -signal.SIGPIPE
+
+        with patch('dffs.diff_x.subprocess.run', return_value=mock_result):
+            runner = CliRunner()
+            result = runner.invoke(main, [str(file1), str(file2)])
+
+            # Should exit cleanly with code 0, not raise an exception
+            assert result.exit_code == 0
+            assert 'Traceback' not in result.output
+
+    def test_other_signals_propagate(self, temp_files):
+        """Test that other signals (not SIGPIPE) propagate their exit code."""
+        file1, file2 = temp_files
+
+        # Mock subprocess.run to simulate SIGKILL
+        mock_result = MagicMock()
+        mock_result.returncode = -signal.SIGKILL
+
+        with patch('dffs.diff_x.subprocess.run', return_value=mock_result):
+            runner = CliRunner()
+            result = runner.invoke(main, [str(file1), str(file2)])
+
+            # Should exit with the signal's negative value
+            assert result.exit_code == -signal.SIGKILL
+
+    def test_no_arguments_shows_help(self):
+        """Test diff-x with no arguments shows help (not traceback)."""
+        runner = CliRunner()
+        result = runner.invoke(main, [])
+        assert result.exit_code != 0
+        # Should show usage help, not a traceback
+        assert 'Usage:' in result.output
+        assert 'diff-x' in result.output
+        assert 'Traceback' not in result.output

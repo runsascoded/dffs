@@ -264,7 +264,7 @@ This provides aliases with the following suffix conventions:
 | `gdxr` | `git diff-x -R` (compare commit to parent) |
 | `gdxs` | `git diff-x -r` (explicit refspec) |
 | `gdxt` | `git diff-x --staged` |
-| `gdxrc` | `git diff-x -R --color` |
+| `gdxcr` | `git diff-x --color -R` |
 | `gdxtw` | `git diff-x --staged -w` |
 
 To see all available aliases:

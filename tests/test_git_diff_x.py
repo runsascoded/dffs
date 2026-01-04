@@ -1,8 +1,10 @@
 """Tests for git-diff-x CLI."""
+import signal
 import pytest
 import tempfile
 import subprocess
 from pathlib import Path
+from unittest.mock import patch
 from click.testing import CliRunner
 from dffs.git_diff_x import main
 
@@ -168,7 +170,44 @@ class TestGitDiffXErrors:
     """Test git-diff-x error handling."""
 
     def test_no_arguments(self):
-        """Test git-diff-x with no arguments shows help."""
+        """Test git-diff-x with no arguments shows help (not traceback)."""
         runner = CliRunner()
         result = runner.invoke(main, [])
         assert result.exit_code != 0
+        # Should show usage help, not a traceback
+        assert 'Usage:' in result.output
+        assert 'git-diff-x' in result.output
+        assert 'Traceback' not in result.output
+
+
+class TestGitDiffXSignals:
+    """Test signal handling in git-diff-x."""
+
+    def test_sigpipe_exits_cleanly(self, git_repo, monkeypatch):
+        """Test that SIGPIPE (from pager exit) results in clean exit, not traceback."""
+        monkeypatch.chdir(git_repo)
+
+        # Mock subprocess.call to simulate SIGPIPE
+        with patch('dffs.git_diff_x.call') as mock_call:
+            mock_call.return_value = -signal.SIGPIPE
+
+            runner = CliRunner()
+            result = runner.invoke(main, ['test.txt'])
+
+            # Should exit cleanly with code 0, not raise an exception
+            assert result.exit_code == 0
+            assert 'Traceback' not in result.output
+
+    def test_other_signals_propagate(self, git_repo, monkeypatch):
+        """Test that other signals (not SIGPIPE) propagate their exit code."""
+        monkeypatch.chdir(git_repo)
+
+        # Mock subprocess.call to simulate SIGKILL
+        with patch('dffs.git_diff_x.call') as mock_call:
+            mock_call.return_value = -signal.SIGKILL
+
+            runner = CliRunner()
+            result = runner.invoke(main, ['test.txt'])
+
+            # Should exit with the signal's negative value
+            assert result.exit_code == -signal.SIGKILL

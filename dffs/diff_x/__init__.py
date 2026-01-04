@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import signal
 import subprocess
 import sys
 
@@ -60,7 +61,14 @@ def main(
             executable=shell_executable,
             pipefail=pipefail,
         )
+        # SIGPIPE (-13) is expected when piping to a pager that exits early
+        if returncode < 0 and returncode == -signal.SIGPIPE:
+            raise SystemExit(0)
         raise SystemExit(returncode)
     else:
         result = subprocess.run(['diff', *diff_args, path1, path2])
-        raise SystemExit(result.returncode)
+        returncode = result.returncode
+        # SIGPIPE (-13) is expected when piping to a pager that exits early
+        if returncode < 0 and returncode == -signal.SIGPIPE:
+            raise SystemExit(0)
+        raise SystemExit(returncode)

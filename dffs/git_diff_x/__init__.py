@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import shlex
+import signal
 import sys
 from shlex import quote
+from subprocess import call
 
 from click import option, argument, command
 from utz import process, err
@@ -123,10 +125,19 @@ def main(
                 executable=shell_executable,
                 pipefail=pipefail,
             )
+            # SIGPIPE (-13) is expected when piping to a pager that exits early
+            if returncode < 0 and returncode == -signal.SIGPIPE:
+                raise SystemExit(0)
             raise SystemExit(returncode)
         else:
             git_diff_args = ['git', 'diff', *diff_args]
             if staged:
                 git_diff_args.append('--cached')
             git_diff_args.extend([refspec, '--', path])
-            process.run(git_diff_args)
+            if verbose:
+                err(f"Running: {' '.join(git_diff_args)}")
+            returncode = call(git_diff_args)
+            # SIGPIPE (-13) is expected when piping to a pager that exits early
+            if returncode < 0 and returncode == -signal.SIGPIPE:
+                raise SystemExit(0)
+            raise SystemExit(returncode)

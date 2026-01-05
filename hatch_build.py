@@ -19,6 +19,7 @@ class GitSHABuildHook(BuildHookInterface):
                 ["git", "rev-parse", "--short", "HEAD"],
                 capture_output=True,
                 text=True,
+                cwd=self.root,
             )
             if result.returncode == 0:
                 sha = result.stdout.strip()

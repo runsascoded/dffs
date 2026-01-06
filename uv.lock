@@ -129,7 +129,7 @@ toml = [
 
 [[package]]
 name = "dffs"
-version = "0.1.4rc1"
+version = "0.1.4rc2"
 source = { editable = "." }
 dependencies = [
     { name = "click" },

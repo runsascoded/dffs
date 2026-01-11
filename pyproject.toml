@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
 name = "dffs"
-version = "0.1.4"
+dynamic = ["version"]
 description = "Pipe and diff files: execute shell pipelines against multiple inputs, diff/compare/join results."
 readme = "README.md"
 license = {text = "MIT"}
@@ -44,5 +44,8 @@ dev = [
     "pytest-cov>=4.0.0",
 ]
 
-[tool.hatch.build.hooks.custom]
-path = "hatch_build.py"
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "dffs/_version.py"

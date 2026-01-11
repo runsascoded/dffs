@@ -1,14 +1,14 @@
 import click
 from click import option, argument
 
-from dffs._version import get_version_info
+from dffs._version import __version__
 
 
 def print_version(ctx, param, value):
     """Print version and exit."""
     if not value or ctx.resilient_parsing:
         return
-    click.echo(get_version_info())
+    click.echo(__version__)
     ctx.exit()
 
 

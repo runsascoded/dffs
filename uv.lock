@@ -129,7 +129,6 @@ toml = [
 
 [[package]]
 name = "dffs"
-version = "0.1.4"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -163,7 +162,7 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'test'", specifier = ">=4.0.0" },
     { name = "utz", specifier = ">=0.21.5" },
 ]
-provides-extras = ["test", "ci"]
+provides-extras = ["ci", "test"]
 
 [package.metadata.requires-dev]
 dev = [

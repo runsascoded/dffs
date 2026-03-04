@@ -2,18 +2,37 @@
 Pipe and diff files: execute shell pipelines, diff/compare/join results.
 
 [![dffs on PyPI](https://img.shields.io/pypi/v/dffs?label=dffs)][PyPI]
+
+Apply a transform to both sides of a comparison, then diff the results — like Haskell's [`on`][Data.Function.on]:
+
+```
+a ─→ [f] ─→ f(a) ─┐
+                    ├─→ [cmp] ─→ result
+b ─→ [f] ─→ f(b) ─┘
+```
+
+Three CLIs apply this pattern with different comparators:
+
+| CLI | `cmp` | Description |
+|-----|-------|-------------|
+| [`git-diff-x`](#git-diff-x) | `diff` | Diff a Git-tracked file at two commits, through a pipeline |
+| [`diff-x`](#diff-x) | `diff` | Diff two files through a pipeline |
+| [`comm-x`](#comm-x) | `comm` | Set operations on two files through a pipeline |
+
+See also: [category-theory.md] for the `(f *** f) >>> cmp` interpretation.
+
 <!-- toc -->
 - [Install](#install)
 - [CLIs](#CLIs)
-    - [`diff-x`](#diff-x)
-        - [Usage](#diff-x-usage)
-        - [Examples](#diff-x-examples)
-    - [`comm-x`](#comm-x)
-        - [Usage](#comm-x-usage)
-        - [Examples](#comm-x-examples)
     - [`git-diff-x`](#git-diff-x)
-        - [Usage](#git-diff-x-usage)
         - [Examples](#git-diff-x-examples)
+        - [Usage](#git-diff-x-usage)
+    - [`diff-x`](#diff-x)
+        - [Examples](#diff-x-examples)
+        - [Usage](#diff-x-usage)
+    - [`comm-x`](#comm-x)
+        - [Examples](#comm-x-examples)
+        - [Usage](#comm-x-usage)
 - [Shell Integration](#shell-integration)
 <!-- /toc -->
 
@@ -25,143 +44,64 @@ pip install dffs
 
 ## CLIs <a id="CLIs"></a>
 
-### `diff-x` <a id="diff-x"></a>
-
-#### Usage <a id="diff-x-usage"></a>
-<!-- `bmdf -r2 diff-x` -->
-```bash
-diff-x
-# Usage: diff-x [OPTIONS] [exec_cmd...] <path1> <path2>
-#
-#   Diff two files after running them through a pipeline of other commands.
-#
-# Options:
-#   -c, --color / --no-color     Colorize the output (default: auto, based on
-#                                TTY)
-#   -P, --pipefail               Check all pipeline commands for errors (like
-#                                bash's `set -o pipefail`); default only checks
-#                                last command
-#   -s, --shell-executable TEXT  Shell to use for executing commands; defaults
-#                                to $SHELL
-#   -S, --no-shell               Don't pass `shell=True` to Python
-#                                `subprocess`es
-#   -U, --unified INTEGER        Number of lines of context to show (passes
-#                                through to `diff`)
-#   -V, --version                Show version and exit
-#   -v, --verbose                Log intermediate commands to stderr
-#   -w, --ignore-whitespace      Ignore whitespace differences (pass `-w` to
-#                                `diff`)
-#   -x, --exec-cmd TEXT          Command(s) to execute before invoking `comm`;
-#                                alternate syntax to passing commands as
-#                                positional arguments
-#   --help                       Show this message and exit.
-```
-
-#### Examples <a id="diff-x-examples"></a>
-
-Given two similar JSON objects, where one is compact and the other is pretty-printed:
-```bash
-echo '{"a":1,"b":2}' > 1.json
-echo '{"a":1,"b":3}' | jq > 2.json 
-```
-
-`diff {1,2}.json` outputs the entirety of both objects:
-```diff
-1c1,4
-< {"a":1,"b":2}
----
-> {
->   "a": 1,
->   "b": 3
-> }
-```
-
-`diff-x 'jq .' {1,2}.json` pretty-prints each side before `diff`ing:
-```diff
-3c3
-<   "b": 2
----
->   "b": 3
-```
-
-### `comm-x` <a id="comm-x"></a>
-`comm` essentially performs set intersection/difference; `comm-x` allows you to run a pipeline of commands on each input, before comparing them.
-
-#### Usage <a id="comm-x-usage"></a>
-<!-- `bmdf -r2 comm-x` -->
-```bash
-comm-x
-# Usage: comm-x [OPTIONS] [exec_cmd...] <path1> <path2>
-#
-#   Select or reject lines common to two input streams, after running each
-#   through a pipeline of other commands.
-#
-# Options:
-#   -1, --exclude-1              Exclude lines only found in the first pipeline
-#   -2, --exclude-2              Exclude lines only found in the second pipeline
-#   -3, --exclude-3              Exclude lines found in both pipelines
-#   -i, --case-insensitive       Case insensitive comparison
-#   -s, --shell-executable TEXT  Shell to use for executing commands; defaults
-#                                to $SHELL
-#   -S, --no-shell               Don't pass `shell=True` to Python
-#                                `subprocess`es
-#   -V, --version                Show version and exit
-#   -v, --verbose                Log intermediate commands to stderr
-#   -x, --exec-cmd TEXT          Command(s) to execute before invoking `comm`;
-#                                alternate syntax to passing commands as
-#                                positional arguments
-#   --help                       Show this message and exit.
-```
-
-#### Examples <a id="comm-x-examples"></a>
-Given two similar lists of numbers, but in different orders:
-```bash
-seq 10 > 1.txt
-seq 10 -2 0 > 2.txt
-```
-
-`comm` outputs gibberish, because the files aren't in sorted order:
-<!-- `bmdf -r1 comm 1.txt 2.txt` -->
-```bash
-comm 1.txt 2.txt
-# 1
-# 	10
-# 2
-# 3
-# 4
-# 5
-# 6
-# 7
-# 		8
-# comm: file 2 is not in sorted order
-# 	6
-# 	4
-# 	2
-# 	0
-# 9
-# comm: file 1 is not in sorted order
-# 10
-# comm: input is not in sorted order
-```
-
-`comm-x sort` sorts each file first:
-<!-- `bmdf comm-x sort 1.txt 2.txt` -->
-```bash
-comm-x sort 1.txt 2.txt
-# 	0
-# 1
-# 		10
-# 		2
-# 3
-# 		4
-# 5
-# 		6
-# 7
-# 		8
-# 9
-```
-
 ### `git-diff-x` <a id="git-diff-x"></a>
+
+Diff a Git-tracked file at two commits (or one commit vs. the worktree), after piping both versions through a command pipeline.
+
+#### Examples <a id="git-diff-x-examples"></a>
+
+##### CSV: ignoring row order
+
+A CSV's rows were reordered in commit `7f0c468`:
+```bash
+git diff --stat 7f0c468^..7f0c468 -- example/data.csv
+# example/data.csv | 4 ++--
+# 1 file changed, 2 insertions(+), 2 deletions(-)
+```
+
+`git diff` shows a noisy patch, but `sort`ing first reveals the data is unchanged:
+```bash
+git diff-x -R 7f0c468 sort example/data.csv
+# (no output — the sorted contents are identical)
+```
+
+##### CSV: comparing column names
+
+In commit `0bdec95`, the `city` column was replaced with `role`. Extract and compare just the header:
+```bash
+git diff-x -R 0bdec95 "head -1 | tr , '\n'" example/data.csv
+# 3c3
+# < city
+# ---
+# > role
+```
+
+##### Comparing line counts
+
+Compare line-count (`wc -l`) of this README, before and after commit `8b7a761`:
+<!-- `bmdf -r1 -- git-diff-x -R 8b7a761 'wc -l' README.md` -->
+```bash
+git-diff-x -R 8b7a761 'wc -l' README.md
+# 1c1
+# < 16
+# ---
+# > 206
+```
+
+##### More examples
+```bash
+# Compare the number of lines (`wc -l`) in file `foo` at the previous vs. current commit
+# (`-R HEAD` is equivalent to `-r HEAD^..HEAD`).
+git diff-x -R HEAD wc -l foo
+
+# Colorized (`-c`) diff of `md5sum`s of `foo`, at HEAD (last committed value) vs. the current
+# worktree content.
+git diff-x -c md5sum foo
+
+# Use `-` to separate pipeline commands from paths (when more than one path is to be diffed),
+# e.g. this compares the largest 10 numbers in `file{1,2}` (HEAD vs. worktree):
+git diff-x 'sort -rn' head - file1 file2
+```
 
 #### Usage <a id="git-diff-x-usage"></a>
 <!-- `bmdf -r2 -- git-diff-x` -->
@@ -217,30 +157,116 @@ git-diff-x
 #   --help                       Show this message and exit.
 ```
 
-#### Examples <a id="git-diff-x-examples"></a>
-Compare line-count (`wc -l`) of this README, before and after commit `8b7a761`:
-<!-- `bmdf -r1 -- git-diff-x -R 8b7a761 'wc -l' README.md` -->
+### `diff-x` <a id="diff-x"></a>
+
+The underlying building block — same concept, but for two arbitrary files (not Git commits).
+
+#### Examples <a id="diff-x-examples"></a>
+
+Given two similar JSON objects, where one is compact and the other is pretty-printed:
 ```bash
-git-diff-x -R 8b7a761 'wc -l' README.md
-# 1c1
-# < 16
-# ---
-# > 206
+echo '{"a":1,"b":2}' > 1.json
+echo '{"a":1,"b":3}' | jq > 2.json
 ```
 
-Examples from `--help` above:
+`diff {1,2}.json` outputs the entirety of both objects:
+```diff
+1c1,4
+< {"a":1,"b":2}
+---
+> {
+>   "a": 1,
+>   "b": 3
+> }
+```
+
+`diff-x 'jq .' {1,2}.json` pretty-prints each side before `diff`ing:
+```diff
+3c3
+<   "b": 2
+---
+>   "b": 3
+```
+
+#### Usage <a id="diff-x-usage"></a>
+<!-- `bmdf -r2 diff-x` -->
 ```bash
-# Compare the number of lines (`wc -l`) in file `foo` at the previous vs. current commit
-# (`-R HEAD` is equivalent to `-r HEAD^..HEAD`).
-git diff-x -R HEAD wc -l foo
+diff-x
+# Usage: diff-x [OPTIONS] [exec_cmd...] <path1> <path2>
+#
+#   Diff two files after running them through a pipeline of other commands.
+#
+# Options:
+#   -c, --color / --no-color     Colorize the output (default: auto, based on
+#                                TTY)
+#   -P, --pipefail               Check all pipeline commands for errors (like
+#                                bash's `set -o pipefail`); default only checks
+#                                last command
+#   -s, --shell-executable TEXT  Shell to use for executing commands; defaults
+#                                to $SHELL
+#   -S, --no-shell               Don't pass `shell=True` to Python
+#                                `subprocess`es
+#   -U, --unified INTEGER        Number of lines of context to show (passes
+#                                through to `diff`)
+#   -V, --version                Show version and exit
+#   -v, --verbose                Log intermediate commands to stderr
+#   -w, --ignore-whitespace      Ignore whitespace differences (pass `-w` to
+#                                `diff`)
+#   -x, --exec-cmd TEXT          Command(s) to execute before invoking `comm`;
+#                                alternate syntax to passing commands as
+#                                positional arguments
+#   --help                       Show this message and exit.
+```
 
-# Colorized (`-c`) diff of `md5sum`s of `foo`, at HEAD (last committed value) vs. the current
-# worktree content.
-git diff-x -c md5sum foo
+### `comm-x` <a id="comm-x"></a>
+`comm` performs set intersection/difference; `comm-x` lets you run a pipeline on each input first.
 
-# Use `-` to separate pipeline commands from paths (when more than one path is to be diffed),
-# e.g. this compares the largest 10 numbers in `file{1,2}` (HEAD vs. worktree):
-git diff-x 'sort -rn' head - file1 file2
+#### Examples <a id="comm-x-examples"></a>
+Given two similar lists of numbers, but in different orders:
+```bash
+seq 10 > 1.txt
+seq 10 -2 0 > 2.txt
+```
+
+`comm` outputs gibberish, because the files aren't in sorted order:
+<!-- `bmdf -r1 comm 1.txt 2.txt` -->
+```bash
+comm 1.txt 2.txt
+# 1
+# 	10
+# 2
+# 3
+# 4
+# 5
+# 6
+# 7
+# 		8
+# comm: file 2 is not in sorted order
+# 	6
+# 	4
+# 	2
+# 	0
+# 9
+# comm: file 1 is not in sorted order
+# 10
+# comm: input is not in sorted order
+```
+
+`comm-x sort` sorts each file first:
+<!-- `bmdf comm-x sort 1.txt 2.txt` -->
+```bash
+comm-x sort 1.txt 2.txt
+# 	0
+# 1
+# 		10
+# 		2
+# 3
+# 		4
+# 5
+# 		6
+# 7
+# 		8
+# 9
 ```
 
 ## Shell Integration <a id="shell-integration"></a>
@@ -280,5 +306,7 @@ To load only aliases for a specific command:
 eval "$(dffs-shell-integration bash git-diff-x)"
 ```
 
+[category-theory.md]: category-theory.md
+[Data.Function.on]: https://hackage.haskell.org/package/base/docs/Data-Function.html#v:on
 [`jq`]: https://stedolan.github.io/jq/
 [PyPI]: https://pypi.org/project/dffs/

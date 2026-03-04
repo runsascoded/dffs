@@ -50,6 +50,33 @@ Diff a Git-tracked file at two commits (or one commit vs. the worktree), after p
 
 #### Examples <a id="git-diff-x-examples"></a>
 
+##### JSON: readable diffs of compact files
+
+A config file is stored as compact JSON (one line, no whitespace). In commit `38856a0`, a few fields were updated, but `git diff` is unreadable:
+```diff
+-{"name":"myapp","version":"1.2.3","settings":{"debug":false,"logLevel":"info","maxRetries":3,...}}
++{"name":"myapp","version":"1.3.0","settings":{"debug":false,"logLevel":"warn","maxRetries":3,...}}
+```
+
+`git diff-x` with [`jq`] pretty-prints both sides before diffing, so you see exactly what changed:
+```bash
+git diff-x -R 38856a0 'jq .' example/config.json
+# 3c3
+# <   "version": "1.2.3",
+# ---
+# >   "version": "1.3.0",
+# 6c6
+# <     "logLevel": "info",
+# ---
+# >     "logLevel": "warn",
+# 11c11
+# <       "analytics": false
+# ---
+# >       "analytics": true
+```
+
+This also normalizes out any whitespace or key-ordering differences — only actual value changes appear.
+
 ##### CSV: ignoring row order
 
 A CSV's rows were reordered in commit `7f0c468`:

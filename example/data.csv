@@ -1,6 +1,6 @@
-name,age,city
-Dave,28,Boston
-Alice,30,New York
-Eve,32,Seattle
-Bob,25,Chicago
-Carol,35,Denver
+name,age,role
+Dave,28,engineer
+Alice,30,manager
+Eve,32,analyst
+Bob,25,designer
+Carol,35,director

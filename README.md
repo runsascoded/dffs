@@ -19,8 +19,6 @@ Three CLIs apply this pattern with different comparators:
 | [`diff-x`](#diff-x) | `diff` | Diff two files through a pipeline |
 | [`comm-x`](#comm-x) | `comm` | Set operations on two files through a pipeline |
 
-See also: [category-theory.md] for the `(f *** f) >>> cmp` interpretation.
-
 <!-- toc -->
 - [Install](#install)
 - [CLIs](#CLIs)
@@ -333,7 +331,6 @@ To load only aliases for a specific command:
 eval "$(dffs-shell-integration bash git-diff-x)"
 ```
 
-[category-theory.md]: category-theory.md
 [Data.Function.on]: https://hackage.haskell.org/package/base/docs/Data-Function.html#v:on
 [`jq`]: https://stedolan.github.io/jq/
 [PyPI]: https://pypi.org/project/dffs/

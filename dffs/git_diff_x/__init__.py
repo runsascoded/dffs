@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import posixpath
 import shlex
 import signal
 import sys
@@ -101,7 +102,7 @@ def main(
         if len(paths) > 1:
             err(path)
         if cmds:
-            git_path = f'{git_relpath_prefix}{path}'
+            git_path = posixpath.normpath(f'{git_relpath_prefix}{path}')
             cmds1 = [ f'git show {ref1}:{quote(git_path)}', *cmds ]
             if ref2:
                 cmds2 = [ f'git show {ref2}:{quote(git_path)}', *cmds ]

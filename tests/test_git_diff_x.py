@@ -166,6 +166,48 @@ class TestGitDiffXMultiplePaths:
         assert result.exit_code in (0, 1)
 
 
+class TestGitDiffXSubdir:
+    """Test git-diff-x invoked from a subdirectory with `..`-containing paths."""
+
+    @pytest.fixture
+    def git_repo_with_subdirs(self):
+        """Repo with `data/foo.txt` (changes line count between HEAD^ and HEAD) and an empty `sub/` sibling dir."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            subprocess.run(['git', 'init'], cwd=tmpdir, check=True, capture_output=True)
+            subprocess.run(['git', 'config', 'user.email', 'test@example.com'], cwd=tmpdir, check=True, capture_output=True)
+            subprocess.run(['git', 'config', 'user.name', 'Test User'], cwd=tmpdir, check=True, capture_output=True)
+
+            (tmpdir / 'data').mkdir()
+            (tmpdir / 'data' / 'foo.txt').write_text('a\nb\n')  # 2 lines
+            (tmpdir / 'sub').mkdir()
+            (tmpdir / 'sub' / '.gitkeep').write_text('')
+            subprocess.run(['git', 'add', '.'], cwd=tmpdir, check=True, capture_output=True)
+            subprocess.run(['git', 'commit', '-m', 'c1'], cwd=tmpdir, check=True, capture_output=True)
+
+            (tmpdir / 'data' / 'foo.txt').write_text('a\nb\nc\n')  # 3 lines
+            subprocess.run(['git', 'add', 'data/foo.txt'], cwd=tmpdir, check=True, capture_output=True)
+            subprocess.run(['git', 'commit', '-m', 'c2'], cwd=tmpdir, check=True, capture_output=True)
+
+            yield tmpdir
+
+    def test_dotdot_path_from_subdir_with_pipeline(self, git_repo_with_subdirs, monkeypatch):
+        """`gdx <cmd> ../data/foo.txt` from `sub/` should resolve `..` for `git show <ref>:<path>`.
+
+        Regression: previously `git_path` was built as `f'{prefix}{path}'` and passed verbatim to
+        `git show`, which doesn't normalize `..` segments — so `git show HEAD:sub/../data/foo.txt`
+        failed with `fatal: path '...' exists on disk, but not in 'HEAD'` and the downstream
+        pipeline command got empty/garbage stdin.
+        """
+        monkeypatch.chdir(git_repo_with_subdirs / 'sub')
+        runner = CliRunner()
+        result = runner.invoke(main, ['-r', 'HEAD^..HEAD', 'wc -l', '../data/foo.txt'])
+        # 2 lines (HEAD^) vs 3 lines (HEAD) → diff
+        assert result.exit_code == 1
+        assert 'fatal:' not in result.output
+        assert 'exists on disk' not in result.output
+
+
 class TestGitDiffXErrors:
     """Test git-diff-x error handling."""
 

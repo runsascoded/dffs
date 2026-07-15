@@ -5,6 +5,7 @@ from os import environ as env, getcwd
 from os.path import relpath
 from subprocess import Popen, PIPE
 from sys import stdout
+from threading import Thread
 
 from utz import err, named_pipes, pipeline, process
 
@@ -87,8 +88,22 @@ def join_pipelines(
             pipe1,
             pipe2,
         ]
-        # Capture stdout so we can suppress it if a pipeline fails
+        # Capture stdout so we can suppress it if a pipeline fails.
+        # Drain in a background thread — otherwise, when `base_cmd`'s output
+        # exceeds the pipe buffer (~64 KB on Linux) it blocks writing, which
+        # blocks it from reading the FIFOs, which blocks the pipelines'
+        # writes, which blocks the `p.wait()` calls below → deadlock.
         proc = Popen(join_cmd, stdout=PIPE)
+        drain: dict[str, bytes | BaseException] = {}
+
+        def drain_stdout() -> None:
+            try:
+                drain['out'] = proc.stdout.read() if proc.stdout else b''
+            except BaseException as e:  # surface, don't silently truncate
+                drain['err'] = e
+
+        stdout_thread = Thread(target=drain_stdout, daemon=True)
+        stdout_thread.start()
 
         # Track pipeline processes and their commands
         pipeline_groups = []  # List of (cmds, procs) tuples
@@ -149,9 +164,12 @@ def join_pipelines(
                             stderr_output = stderr_output.decode('utf-8', errors='replace')
                         err(stderr_output.rstrip())
 
-        # Wait for base_cmd and capture its output
+        # Wait for base_cmd; the drain thread already has its output.
         proc.wait()
-        base_stdout = proc.stdout.read() if proc.stdout else b''
+        stdout_thread.join()
+        if 'err' in drain:
+            raise drain['err']
+        base_stdout = drain.get('out', b'')
 
         # If any pipeline failed, suppress base_cmd output and return error code
         if pipeline_failed:

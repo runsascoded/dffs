@@ -1,4 +1,7 @@
 """Tests for join_pipelines function."""
+import signal
+from io import StringIO
+
 import pytest
 from dffs.utils import join_pipelines
 
@@ -190,3 +193,53 @@ class TestJoinPipelinesShellModes:
             shell=False,
         )
         assert returncode == 0
+
+
+class TestJoinPipelinesLargeOutput:
+    """Regression: previously, `join_pipelines` captured `base_cmd`'s stdout
+    via `stdout=PIPE` and only read it after `p.wait()` returned for each
+    pipeline. When `base_cmd`'s output exceeded the pipe buffer (~64 KB on
+    Linux), the writer blocked, which stopped it from draining the FIFOs the
+    pipelines wrote to, which blocked `p.wait()` → deadlock. Fixed by draining
+    `base_cmd`'s stdout in a background thread."""
+
+    def test_large_diff_output_does_not_deadlock(self, monkeypatch):
+        """Diff of two ≥100 KB-per-side streams that fully differ produces
+        several hundred KB of diff output — well over the pipe buffer. Must
+        complete promptly (a broken fix hangs indefinitely) *and* emit the
+        full output (a truncating drain would silently drop lines)."""
+        # `join_pipelines` writes to the module-level `stdout` it bound at
+        # import (`from sys import stdout`), so capture that object directly —
+        # `capsys`/`capfd` don't see writes through this stale reference.
+        buf = StringIO()
+        monkeypatch.setattr('dffs.utils.stdout', buf)
+
+        def _timeout(signum, frame):
+            raise TimeoutError("join_pipelines deadlocked on large output")
+        prev = signal.signal(signal.SIGALRM, _timeout)
+        signal.alarm(10)  # fix completes in <1 s; 10 s is generous
+        try:
+            # `seq 1 30000` ≈ 169 KB per side; differing content ⇒ full diff
+            # (~340 KB output) — comfortably over the 64 KB pipe buffer.
+            returncode = join_pipelines(
+                base_cmd=['diff'],
+                cmds1=['seq 1 30000'],
+                cmds2=['seq 30001 60000'],
+                shell=True,
+            )
+        finally:
+            signal.alarm(0)
+            signal.signal(signal.SIGALRM, prev)
+        # Files differ ⇒ diff exits 1.
+        assert returncode == 1
+        # Disjoint sequences ⇒ diff replaces every line of side 1 with every
+        # line of side 2: one `c` hunk header, then all 30000 `<` lines, a
+        # `---` separator, then all 30000 `>` lines. Asserting the full lists
+        # verifies the drain thread captured every byte, not a truncated head.
+        out_lines = buf.getvalue().rstrip("\n").split("\n")
+        assert out_lines[0] == "1,30000c1,30000"
+        assert [l[2:] for l in out_lines if l.startswith("< ")] == \
+            [str(i) for i in range(1, 30001)]
+        assert out_lines[30001] == "---"
+        assert [l[2:] for l in out_lines if l.startswith("> ")] == \
+            [str(i) for i in range(30001, 60001)]

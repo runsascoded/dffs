@@ -94,11 +94,15 @@ def join_pipelines(
         # blocks it from reading the FIFOs, which blocks the pipelines'
         # writes, which blocks the `p.wait()` calls below → deadlock.
         proc = Popen(join_cmd, stdout=PIPE)
-        stdout_buf: list[bytes] = []
-        stdout_thread = Thread(
-            target=lambda: stdout_buf.append(proc.stdout.read() if proc.stdout else b''),
-            daemon=True,
-        )
+        drain: dict[str, bytes | BaseException] = {}
+
+        def drain_stdout() -> None:
+            try:
+                drain['out'] = proc.stdout.read() if proc.stdout else b''
+            except BaseException as e:  # surface, don't silently truncate
+                drain['err'] = e
+
+        stdout_thread = Thread(target=drain_stdout, daemon=True)
         stdout_thread.start()
 
         # Track pipeline processes and their commands
@@ -163,7 +167,9 @@ def join_pipelines(
         # Wait for base_cmd; the drain thread already has its output.
         proc.wait()
         stdout_thread.join()
-        base_stdout = stdout_buf[0] if stdout_buf else b''
+        if 'err' in drain:
+            raise drain['err']
+        base_stdout = drain.get('out', b'')
 
         # If any pipeline failed, suppress base_cmd output and return error code
         if pipeline_failed:
